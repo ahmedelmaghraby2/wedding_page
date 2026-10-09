@@ -505,6 +505,150 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Change language'**
   String get changeLanguage;
+
+  /// No description provided for @openInvitation.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Invitation'**
+  String get openInvitation;
+
+  /// No description provided for @gateEyebrow.
+  ///
+  /// In en, this message translates to:
+  /// **'You are invited to celebrate our wedding'**
+  String get gateEyebrow;
+
+  /// No description provided for @navDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get navDetails;
+
+  /// No description provided for @navStory.
+  ///
+  /// In en, this message translates to:
+  /// **'Our Story'**
+  String get navStory;
+
+  /// No description provided for @navWishes.
+  ///
+  /// In en, this message translates to:
+  /// **'Wishes'**
+  String get navWishes;
+
+  /// No description provided for @countdownTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Counting down to forever'**
+  String get countdownTitle;
+
+  /// No description provided for @countdownDays.
+  ///
+  /// In en, this message translates to:
+  /// **'Days'**
+  String get countdownDays;
+
+  /// No description provided for @countdownHours.
+  ///
+  /// In en, this message translates to:
+  /// **'Hours'**
+  String get countdownHours;
+
+  /// No description provided for @countdownMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'Minutes'**
+  String get countdownMinutes;
+
+  /// No description provided for @countdownSeconds.
+  ///
+  /// In en, this message translates to:
+  /// **'Seconds'**
+  String get countdownSeconds;
+
+  /// No description provided for @countdownToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Today we celebrate! 🎉'**
+  String get countdownToday;
+
+  /// No description provided for @storyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Our Story'**
+  String get storyTitle;
+
+  /// No description provided for @storyParagraph1.
+  ///
+  /// In en, this message translates to:
+  /// **'It began with a simple hello, and grew into a love we never want to end. Through every season, every laugh and every quiet moment, we chose each other — again and again.'**
+  String get storyParagraph1;
+
+  /// No description provided for @storyParagraph2.
+  ///
+  /// In en, this message translates to:
+  /// **'Now we are ready for the next chapter, and it would not be complete without you. Thank you for being part of our story.'**
+  String get storyParagraph2;
+
+  /// No description provided for @heroScrollHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Scroll to explore'**
+  String get heroScrollHint;
+
+  /// No description provided for @wishesSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave us a few words we will treasure forever'**
+  String get wishesSubtitle;
+
+  /// No description provided for @leaveAWish.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave a wish'**
+  String get leaveAWish;
+
+  /// No description provided for @closingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'With love, thank you'**
+  String get closingTitle;
+
+  /// No description provided for @closingMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Your presence is the greatest gift of all. We cannot wait to celebrate this beautiful beginning surrounded by the people we love.'**
+  String get closingMessage;
+
+  /// No description provided for @footerNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Made with love'**
+  String get footerNote;
+
+  /// No description provided for @playMusic.
+  ///
+  /// In en, this message translates to:
+  /// **'Play music'**
+  String get playMusic;
+
+  /// No description provided for @pauseMusic.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause music'**
+  String get pauseMusic;
+
+  /// No description provided for @muteMusic.
+  ///
+  /// In en, this message translates to:
+  /// **'Mute music'**
+  String get muteMusic;
+
+  /// No description provided for @unmuteMusic.
+  ///
+  /// In en, this message translates to:
+  /// **'Unmute music'**
+  String get unmuteMusic;
 }
 
 class _AppLocalizationsDelegate

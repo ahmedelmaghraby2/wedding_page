@@ -215,4 +215,79 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get changeLanguage => 'تغيير اللغة';
+
+  @override
+  String get openInvitation => 'افتح الدعوة';
+
+  @override
+  String get gateEyebrow => 'أنتم مدعوون للاحتفال بزفافنا';
+
+  @override
+  String get navDetails => 'التفاصيل';
+
+  @override
+  String get navStory => 'قصتنا';
+
+  @override
+  String get navWishes => 'الأمنيات';
+
+  @override
+  String get countdownTitle => 'العد التنازلي للأبد';
+
+  @override
+  String get countdownDays => 'أيام';
+
+  @override
+  String get countdownHours => 'ساعات';
+
+  @override
+  String get countdownMinutes => 'دقائق';
+
+  @override
+  String get countdownSeconds => 'ثوانٍ';
+
+  @override
+  String get countdownToday => 'اليوم نحتفل! 🎉';
+
+  @override
+  String get storyTitle => 'قصتنا';
+
+  @override
+  String get storyParagraph1 =>
+      'بدأت بتحيّة بسيطة، ثم كبرت لتصبح حبًّا لا نريد أن ينتهي. في كل فصل، وكل ضحكة، وكل لحظة هادئة، اخترنا بعضنا — مرّة تلو الأخرى.';
+
+  @override
+  String get storyParagraph2 =>
+      'واليوم نستعدّ لفصلنا التالي، ولن يكتمل إلا بوجودكم. شكرًا لأنكم جزء من قصتنا.';
+
+  @override
+  String get heroScrollHint => 'اسحب للاستكشاف';
+
+  @override
+  String get wishesSubtitle => 'اتركوا لنا كلمات سنحتفظ بها إلى الأبد';
+
+  @override
+  String get leaveAWish => 'اترك أمنية';
+
+  @override
+  String get closingTitle => 'بكل الحب، شكرًا لكم';
+
+  @override
+  String get closingMessage =>
+      'حضوركم أغلى هدية. لا نطيق الانتظار للاحتفال بهذه البداية الجميلة بين من نحب.';
+
+  @override
+  String get footerNote => 'صُنع بحب';
+
+  @override
+  String get playMusic => 'تشغيل الموسيقى';
+
+  @override
+  String get pauseMusic => 'إيقاف الموسيقى';
+
+  @override
+  String get muteMusic => 'كتم الموسيقى';
+
+  @override
+  String get unmuteMusic => 'إلغاء كتم الموسيقى';
 }

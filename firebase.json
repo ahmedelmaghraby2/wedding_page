@@ -3,9 +3,9 @@
     "platforms": {
       "dart": {
         "lib/firebase_options.dart": {
-          "projectId": "wedding-75fe1",
+          "projectId": "soltan-aya",
           "configurations": {
-            "web": "1:749132553778:web:64fdaa9119a621ce5ba62b"
+            "web": "1:592302501685:web:0ee4c9a738732be5b2267c"
           }
         }
       }

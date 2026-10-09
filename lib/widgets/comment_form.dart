@@ -1,6 +1,7 @@
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:wedding/core/theme/app_colors.dart';
 import 'package:wedding/features/wedding/data/comment_access_code.dart';
 import 'package:wedding/l10n/generated/app_localizations.dart';
 
@@ -110,7 +111,7 @@ class _CommentFormState extends State<CommentForm> {
                   _showEmojiPicker
                       ? Icons.keyboard_outlined
                       : Icons.emoji_emotions_outlined,
-                  color: const Color(0xFF8B7355),
+                  color: AppColors.champagne,
                 ),
                 onPressed: widget.isSubmitting ? null : _toggleEmojiPicker,
                 tooltip: l10n.addEmoji,
@@ -138,7 +139,10 @@ class _CommentFormState extends State<CommentForm> {
                 config: const Config(
                   height: 250,
                   checkPlatformCompatibility: true,
-                  emojiViewConfig: EmojiViewConfig(emojiSizeMax: 24),
+                  emojiViewConfig: EmojiViewConfig(
+                    emojiSizeMax: 24,
+                    backgroundColor: AppColors.cream,
+                  ),
                 ),
               ),
             ),
