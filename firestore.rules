@@ -1,0 +1,70 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function ownerDocPath(commentId) {
+      return /databases/$(database)/documents/comment_owners/$(commentId);
+    }
+
+    function hasFreshOwnerProof(commentId) {
+      return existsAfter(ownerDocPath(commentId))
+        && getAfter(ownerDocPath(commentId)).data.keys()
+           .hasAll(['proofHash', 'proofNonce'])
+        && getAfter(ownerDocPath(commentId)).data.proofHash is string
+        && getAfter(ownerDocPath(commentId)).data.proofHash
+           == getAfter(ownerDocPath(commentId)).data.codeHash
+        && getAfter(ownerDocPath(commentId)).data.proofHash.size() == 64
+        && (
+          !get(ownerDocPath(commentId)).data.keys().hasAny(['proofNonce'])
+          || getAfter(ownerDocPath(commentId)).data.proofNonce
+             != get(ownerDocPath(commentId)).data.proofNonce
+        );
+    }
+
+    function isValidComment(data) {
+      return data.keys().hasOnly(['fullName', 'comment', 'avatarSeed', 'createdAt'])
+        && data.fullName is string
+        && data.fullName.size() <= 50
+        && data.comment is string
+        && data.comment.size() > 0
+        && data.comment.size() <= 500
+        && data.avatarSeed is string
+        && data.avatarSeed.size() <= 60;
+    }
+
+    match /wedding_comments/{commentId} {
+      allow read: if true;
+
+      allow create: if isValidComment(request.resource.data)
+        && existsAfter(ownerDocPath(commentId));
+
+      allow update: if isValidComment(request.resource.data)
+        && request.resource.data.fullName == resource.data.fullName
+        && request.resource.data.avatarSeed == resource.data.avatarSeed
+        && request.resource.data.createdAt == resource.data.createdAt
+        && hasFreshOwnerProof(commentId);
+
+      allow delete: if hasFreshOwnerProof(commentId);
+    }
+
+    match /comment_owners/{commentId} {
+      allow read: if false;
+
+      allow create: if request.resource.data.keys()
+              .hasOnly(['commentId', 'codeHash', 'createdAt'])
+        && request.resource.data.commentId == commentId
+        && request.resource.data.codeHash is string
+        && request.resource.data.codeHash.size() == 64;
+
+      allow update: if request.resource.data.keys()
+              .hasOnly(['commentId', 'codeHash', 'createdAt', 'proofHash', 'proofNonce'])
+        && request.resource.data.commentId == resource.data.commentId
+        && request.resource.data.codeHash is string
+        && request.resource.data.codeHash == resource.data.codeHash
+        && request.resource.data.proofHash == resource.data.codeHash
+        && request.resource.data.proofNonce is string;
+
+      allow delete: if false;
+    }
+  }
+}
