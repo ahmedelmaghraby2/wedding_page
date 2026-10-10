@@ -17,7 +17,7 @@ class CommentAccessCode {
   static const String special = r'!@#$%^&*()-_=+[]{}?.,~';
   static const String _all = '$upper$lower$digits$special';
 
-  static const String _pepper = 'adel-rahma-comments-v1';
+  static const String _pepper = 'soltan-aya-comments-v1';
 
   static String generate({Random? random}) {
     final rng = random ?? Random.secure();

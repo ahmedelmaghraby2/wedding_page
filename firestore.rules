@@ -22,14 +22,17 @@ service cloud.firestore {
     }
 
     function isValidComment(data) {
-      return data.keys().hasOnly(['fullName', 'comment', 'avatarSeed', 'createdAt'])
+      return data.keys().hasOnly(['fullName', 'comment', 'avatarSeed', 'weddingId', 'createdAt'])
         && data.fullName is string
         && data.fullName.size() <= 50
         && data.comment is string
         && data.comment.size() > 0
         && data.comment.size() <= 500
         && data.avatarSeed is string
-        && data.avatarSeed.size() <= 60;
+        && data.avatarSeed.size() <= 60
+        && data.weddingId is string
+        && data.weddingId.size() > 0
+        && data.weddingId.size() <= 60;
     }
 
     match /wedding_comments/{commentId} {
@@ -41,6 +44,7 @@ service cloud.firestore {
       allow update: if isValidComment(request.resource.data)
         && request.resource.data.fullName == resource.data.fullName
         && request.resource.data.avatarSeed == resource.data.avatarSeed
+        && request.resource.data.weddingId == resource.data.weddingId
         && request.resource.data.createdAt == resource.data.createdAt
         && hasFreshOwnerProof(commentId);
 

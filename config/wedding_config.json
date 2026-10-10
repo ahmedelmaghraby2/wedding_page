@@ -1,0 +1,56 @@
+{
+  "$comment": "Single source of truth for the Ahmed & Aya wedding website. Edit this file, swap the images/song, assign a new weddingId, validate, build, deploy.",
+  "weddingId": "ahmed-aya",
+  "title": {
+    "en": "Ahmed & Aya Wedding",
+    "ar": "دعوة زفاف أحمد و آية"
+  },
+  "developer": { "en": "Ahmed Elmaghraby", "ar": "أحمد المغربي" },
+  "groom": { "en": "Ahmed", "ar": "أحمد" },
+  "bride": { "en": "Aya", "ar": "آية" },
+  "event": {
+    "countdownDateTime": "2026-10-28T20:00:00+03:00",
+    "display": {
+      "date": {
+        "en": "28/10/2026",
+        "ar": "28/10/2026"
+      },
+      "time": {
+        "en": "8:00 PM",
+        "ar": "8:00 مساءً"
+      },
+      "venue": {
+        "en": "Maryal Hall B",
+        "ar": "قاعة ماريال ب"
+      },
+      "city": {
+        "en": "Port Said, Egypt",
+        "ar": "بورسعيد، مصر"
+      }
+    },
+    "mapsUrl": "https://maps.app.goo.gl/Aa2HcwvPYXmNtvdL7"
+  },
+  "heroImage": "assets/weddings/ahmed-aya/hero.jpg",
+  "musicSource": "assets/weddings/ahmed-aya/song.mp3",
+  "caption": {
+    "en": "We invite you to share in our joy on this special day",
+    "ar": "ندعوكم لمشاركتنا فرحتنا في هذا اليوم المميز"
+  },
+  "story": {
+    "en": [
+      "It began with a simple hello, and grew into a love we never want to end. Through every season, every laugh and every quiet moment, we chose each other — again and again.",
+      "Now we are ready for the next chapter, and it would not be complete without you. Thank you for being part of our story."
+    ],
+    "ar": [
+      "بدأت بتحيّة بسيطة، ثم كبرت لتصبح حبًّا لا نريد أن ينتهي. في كل فصل، وكل ضحكة، وكل لحظة هادئة، اخترنا بعضنا — مرّة تلو الأخرى.",
+      "واليوم نستعدّ لفصلنا التالي، ولن يكتمل إلا بوجودكم. شكرًا لأنكم جزء من قصتنا."
+    ]
+  },
+  "gallery": [
+    "assets/weddings/ahmed-aya/story-1.jpeg",
+    "assets/weddings/ahmed-aya/story-2.jpeg",
+    "assets/weddings/ahmed-aya/story-3.jpeg"
+  ],
+  "showCountdown": true,
+  "showComments": true
+}

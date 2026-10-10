@@ -1,0 +1,43 @@
+{
+  "$comment": "EXEMPLAR CONFIGURATION — placeholder couple for architecture validation and tests only. Never deployed. Copy this file and replace every value with a real couple's details and real assets.",
+  "weddingId": "demo-omar-layla",
+  "title": {
+    "en": "Omar & Layla Wedding",
+    "ar": "دعوة زفاف Omar و Layla"
+  },
+  "developer": { "en": "Placeholder Dev", "ar": "مطوّر تجريبي" },
+  "groom": { "en": "Omar", "ar": "عمر" },
+  "bride": { "en": "Layla", "ar": "ليلى" },
+  "event": {
+    "countdownDateTime": "2027-03-20T19:00:00+02:00",
+    "display": {
+      "date": { "en": "20/03/2027", "ar": "20/03/2027" },
+      "time": { "en": "7:00 PM", "ar": "7:00 مساءً" },
+      "venue": { "en": "Nile Garden Hall", "ar": "قاعة نايل جاردن" },
+      "city": { "en": "Cairo, Egypt", "ar": "القاهرة، مصر" }
+    },
+    "mapsUrl": "https://maps.google.com/?q=30.0444,31.2357"
+  },
+  "heroImage": "assets/weddings/omar-layla/hero.jpg",
+  "musicSource": "assets/weddings/omar-layla/song.mp3",
+  "caption": {
+    "en": "Together with their families, we invite you to celebrate our wedding day",
+    "ar": "مع عائلتيهما، ندعوكم للاحتفال بيوم زفافهما"
+  },
+  "story": {
+    "en": [
+      "Two hearts, one beginning. What started as friendship bloomed into forever.",
+      "We are overjoyed to welcome you to the start of our life together."
+    ],
+    "ar": [
+      "قلبان وبداية واحدة. ما بدأ صداقة أصبح أبدًا.",
+      "يسعدنا أن نرحب بكم في بداية حياتنا معًا."
+    ]
+  },
+  "gallery": [
+    "assets/weddings/omar-layla/story-1.jpg",
+    "assets/weddings/omar-layla/story-2.jpg"
+  ],
+  "showCountdown": true,
+  "showComments": true
+}

@@ -10,18 +10,7 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appTitle => 'Adel & Rahma Wedding';
-
-  @override
   String get weddingInvitation => 'Wedding Invitation';
-
-  @override
-  String get heroSubtitle =>
-      'We invite you to share in our joy on this special day';
-
-  @override
-  String get weddingMessage =>
-      'In the name of God, we begin the most beautiful story ❤️\n\nA moment long awaited, and a joy we wish becomes even more beautiful with you here with us.\n\nHappy to share our forever with you.\n\nAdel & Rahma';
 
   @override
   String get weddingDetails => 'Wedding Details';
@@ -37,18 +26,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get detailLocation => 'Location';
-
-  @override
-  String get weddingDate => '16/10/2026';
-
-  @override
-  String get weddingTime => '8:00 PM';
-
-  @override
-  String get venueName => 'Maryal Hall';
-
-  @override
-  String get weddingCity => 'Port Said, Egypt';
 
   @override
   String get openInGoogleMaps => 'Open in Google Maps';
@@ -218,4 +195,71 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get changeLanguage => 'Change language';
+
+  @override
+  String get openInvitation => 'Open Invitation';
+
+  @override
+  String get gateEyebrow => 'You are invited to celebrate our wedding';
+
+  @override
+  String get navDetails => 'Details';
+
+  @override
+  String get navStory => 'Our Story';
+
+  @override
+  String get navWishes => 'Wishes';
+
+  @override
+  String get countdownTitle => 'Counting down to forever';
+
+  @override
+  String get countdownDays => 'Days';
+
+  @override
+  String get countdownHours => 'Hours';
+
+  @override
+  String get countdownMinutes => 'Minutes';
+
+  @override
+  String get countdownSeconds => 'Seconds';
+
+  @override
+  String get countdownToday => 'Today we celebrate! 🎉';
+
+  @override
+  String get storyTitle => 'Our Story';
+
+  @override
+  String get heroScrollHint => 'Scroll to explore';
+
+  @override
+  String get wishesSubtitle => 'Leave us a few words we will treasure forever';
+
+  @override
+  String get leaveAWish => 'Leave a wish';
+
+  @override
+  String get closingTitle => 'With love, thank you';
+
+  @override
+  String get closingMessage =>
+      'Your presence is the greatest gift of all. We cannot wait to celebrate this beautiful beginning surrounded by the people we love.';
+
+  @override
+  String get footerNote => 'Made with love';
+
+  @override
+  String get playMusic => 'Play music';
+
+  @override
+  String get pauseMusic => 'Pause music';
+
+  @override
+  String get muteMusic => 'Mute music';
+
+  @override
+  String get unmuteMusic => 'Unmute music';
 }

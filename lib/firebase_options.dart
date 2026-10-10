@@ -53,12 +53,12 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyCb0Sa-OTmp9Y6K4Syw0ayVFVieTY8RpKE',
-    appId: '1:749132553778:web:64fdaa9119a621ce5ba62b',
-    messagingSenderId: '749132553778',
-    projectId: 'wedding-75fe1',
-    authDomain: 'wedding-75fe1.firebaseapp.com',
-    storageBucket: 'wedding-75fe1.firebasestorage.app',
-    measurementId: 'G-FQS8S8W61Y',
+    apiKey: 'AIzaSyBx15wKm5weqSyf5PyvV_HDqx63gWqnwbo',
+    appId: '1:592302501685:web:0ee4c9a738732be5b2267c',
+    messagingSenderId: '592302501685',
+    projectId: 'soltan-aya',
+    authDomain: 'soltan-aya.firebaseapp.com',
+    storageBucket: 'soltan-aya.firebasestorage.app',
+    measurementId: 'G-ZSRD707FFG',
   );
 }

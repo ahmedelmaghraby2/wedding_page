@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
+
+import 'package:wedding/core/theme/app_colors.dart';
 import 'package:wedding/l10n/generated/app_localizations.dart';
 
 class ErrorState extends StatelessWidget {
   final String message;
   final VoidCallback? onRetry;
 
-  const ErrorState({
-    super.key,
-    required this.message,
-    this.onRetry,
-  });
+  const ErrorState({super.key, required this.message, this.onRetry});
 
   @override
   Widget build(BuildContext context) {
@@ -18,20 +16,22 @@ class ErrorState extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
+          const Icon(
             Icons.error_outline,
-            size: 48,
-            color: Colors.orange[700],
+            size: 44,
+            color: AppColors.rose,
           ),
           const SizedBox(height: 16),
           Text(
             message,
-            style: Theme.of(context).textTheme.bodyMedium,
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(color: AppColors.taupe),
             textAlign: TextAlign.center,
           ),
           if (onRetry != null) ...[
             const SizedBox(height: 16),
-            FilledButton.tonal(
+            OutlinedButton(
               onPressed: onRetry,
               child: Text(AppLocalizations.of(context).tryAgain),
             ),

@@ -5,6 +5,7 @@ class WeddingComment {
   final String? comment;
   final String? avatarSeed;
   final Timestamp? createdAt;
+  final String? weddingId;
   final String? id;
 
   const WeddingComment({
@@ -12,6 +13,7 @@ class WeddingComment {
     this.comment,
     this.avatarSeed,
     this.createdAt,
+    this.weddingId,
     this.id,
   });
 
@@ -30,6 +32,9 @@ class WeddingComment {
         avatarSeed: data['avatarSeed'] is String
             ? data['avatarSeed'] as String
             : null,
+        weddingId: data['weddingId'] is String
+            ? data['weddingId'] as String
+            : null,
         createdAt: data['createdAt'] is Timestamp
             ? data['createdAt'] as Timestamp
             : null,
@@ -46,6 +51,7 @@ class WeddingComment {
       'avatarSeed': avatarSeed?.trim().isNotEmpty == true
           ? avatarSeed?.trim()
           : (fullName?.trim().isNotEmpty == true ? fullName?.trim() : 'Guest'),
+      'weddingId': weddingId?.trim() ?? '',
       'createdAt': FieldValue.serverTimestamp(),
     };
   }

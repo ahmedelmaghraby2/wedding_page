@@ -1,31 +1,57 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:wedding/core/config/wedding_scope.dart';
 import 'package:wedding/core/failure_message.dart';
+import 'package:wedding/core/motion/reveal.dart';
+import 'package:wedding/core/music/music_controller.dart';
+import 'package:wedding/core/theme/app_colors.dart';
 import 'package:wedding/features/wedding/data/wedding_comment.dart';
 import 'package:wedding/features/wedding/data/wedding_comment_repository.dart';
+import 'package:wedding/features/wedding/presentation/sections/closing_section.dart';
+import 'package:wedding/features/wedding/presentation/sections/countdown_section.dart';
+import 'package:wedding/features/wedding/presentation/sections/details_section.dart';
+import 'package:wedding/features/wedding/presentation/sections/hero_section.dart';
+import 'package:wedding/features/wedding/presentation/sections/story_section.dart';
 import 'package:wedding/l10n/generated/app_localizations.dart';
 import 'package:wedding/widgets/comment_dialogs.dart';
 import 'package:wedding/widgets/comment_form.dart';
 import 'package:wedding/widgets/comment_item.dart';
 import 'package:wedding/widgets/empty_state.dart';
 import 'package:wedding/widgets/error_state.dart';
+import 'package:wedding/widgets/invitation_gate.dart';
 import 'package:wedding/widgets/loading_indicator.dart';
+import 'package:wedding/widgets/section.dart';
+import 'package:wedding/widgets/site_header.dart';
 
 class WeddingInvitationPage extends StatefulWidget {
-  const WeddingInvitationPage({super.key, required this.onToggleLocale});
+  const WeddingInvitationPage({
+    super.key,
+    required this.onToggleLocale,
+    required this.music,
+  });
 
   final void Function(String currentLanguageCode) onToggleLocale;
+  final MusicController music;
 
   @override
   State<WeddingInvitationPage> createState() => _WeddingInvitationPageState();
 }
 
-class _WeddingInvitationPageState extends State<WeddingInvitationPage> {
-  final _commentsRepository = WeddingCommentRepository();
+class _WeddingInvitationPageState extends State<WeddingInvitationPage>
+    with SingleTickerProviderStateMixin {
+  late final WeddingCommentRepository _commentsRepository;
   final _nameController = TextEditingController();
   final _commentController = TextEditingController();
   final _accessCodeController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  final _scrollController = ScrollController();
+  final _detailsKey = GlobalKey();
+  final _storyKey = GlobalKey();
+  final _wishesKey = GlobalKey();
+
+  StreamSubscription<List<WeddingComment>>? _commentsSub;
   List<WeddingComment> _comments = [];
   bool _isLoadingComments = true;
   CommentFailure? _commentsError;
@@ -33,41 +59,83 @@ class _WeddingInvitationPageState extends State<WeddingInvitationPage> {
   String? _submitMessage;
   bool _submitSuccess = false;
 
+  late final AnimationController _gateOpacity = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 750),
+    value: 1,
+  );
+  bool _showGate = true;
+  bool _scrolled = false;
+
   @override
   void initState() {
     super.initState();
-    _loadComments();
+    _commentsRepository = WeddingCommentRepository(
+      weddingId: WeddingScope.ofTree(context).weddingId,
+    );
+    _subscribeComments();
+    _scrollController.addListener(_onScroll);
   }
 
   @override
   void dispose() {
+    _commentsSub?.cancel();
+    _scrollController.dispose();
     _nameController.dispose();
     _commentController.dispose();
     _accessCodeController.dispose();
+    _gateOpacity.dispose();
     super.dispose();
   }
 
-  Future<void> _loadComments() async {
-    if (!mounted) return;
+  void _onScroll() {
+    final scrolled = _scrollController.hasClients &&
+        _scrollController.offset > 12;
+    if (scrolled != _scrolled) {
+      setState(() => _scrolled = scrolled);
+    }
+  }
+
+  void _openGate() {
+    if (!_showGate) return;
+    widget.music.play();
+    _gateOpacity.reverse().whenComplete(() {
+      if (mounted) setState(() => _showGate = false);
+    });
+  }
+
+  void _subscribeComments() {
+    _commentsSub?.cancel();
     setState(() {
       _isLoadingComments = true;
       _commentsError = null;
     });
-    try {
-      final result = await _commentsRepository.getCommentsOnce();
-      if (!mounted) return;
-      setState(() {
-        _comments = result.comments;
-        _isLoadingComments = false;
-        _commentsError = result.failure;
-      });
-    } catch (_) {
-      if (!mounted) return;
-      setState(() {
-        _isLoadingComments = false;
-        _commentsError = CommentFailure.unknown;
-      });
-    }
+    var received = false;
+    _commentsSub = _commentsRepository.getCommentsStream().listen(
+      (comments) {
+        received = true;
+        if (!mounted) return;
+        setState(() {
+          _comments = comments;
+          _isLoadingComments = false;
+          _commentsError = null;
+        });
+      },
+      onError: (_) {
+        if (!mounted) return;
+        setState(() {
+          _isLoadingComments = false;
+          _commentsError = CommentFailure.unknown;
+        });
+      },
+      onDone: () {
+        if (!mounted || received) return;
+        setState(() {
+          _isLoadingComments = false;
+          _commentsError = CommentFailure.firebaseUnavailable;
+        });
+      },
+    );
   }
 
   Future<void> _submitComment() async {
@@ -103,7 +171,6 @@ class _WeddingInvitationPageState extends State<WeddingInvitationPage> {
         _accessCodeController.clear();
         _formKey.currentState?.reset();
       });
-      await _loadComments();
     } else {
       setState(() {
         _isSubmitting = false;
@@ -120,7 +187,8 @@ class _WeddingInvitationPageState extends State<WeddingInvitationPage> {
     final code = await showAccessCodeDialog(
       context,
       title: l10n.enterAccessCodeTitle,
-      onVerify: (value) => _commentsRepository.verifyAccessCode(id, value),
+      onVerify: (value) =>
+          _commentsRepository.verifyAccessCode(id, value),
     );
     if (code == null || !mounted) return;
     final updated = await showEditCommentDialog(
@@ -132,7 +200,6 @@ class _WeddingInvitationPageState extends State<WeddingInvitationPage> {
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(SnackBar(content: Text(l10n.commentUpdated)));
-    await _loadComments();
   }
 
   Future<void> _deleteComment(WeddingComment comment) async {
@@ -142,7 +209,8 @@ class _WeddingInvitationPageState extends State<WeddingInvitationPage> {
     final code = await showAccessCodeDialog(
       context,
       title: l10n.enterAccessCodeTitle,
-      onVerify: (value) => _commentsRepository.verifyAccessCode(id, value),
+      onVerify: (value) =>
+          _commentsRepository.verifyAccessCode(id, value),
     );
     if (code == null || !mounted) return;
     final deleted = await showDeleteConfirmDialog(
@@ -153,257 +221,250 @@ class _WeddingInvitationPageState extends State<WeddingInvitationPage> {
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(SnackBar(content: Text(l10n.commentDeleted)));
-    await _loadComments();
   }
 
   Future<void> _openGoogleMaps() async {
-    const url = 'https://maps.app.goo.gl/Aa2HcwvPYXmNtvdL7';
+    final url = context.wedding.event.mapsUrl;
+    final l10n = AppLocalizations.of(context);
     try {
       final uri = Uri.parse(url);
       if (await canLaunchUrl(uri)) {
         await launchUrl(uri, mode: LaunchMode.externalApplication);
+      } else if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l10n.mapsOpenFailed)));
       }
     } catch (_) {
-      // ignore
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l10n.mapsOpenFailed)));
+      }
     }
+  }
+
+  void _navigateTo(GlobalKey key) {
+    final target = key.currentContext;
+    if (target == null) return;
+    final reduce = prefersReducedMotion(context);
+    Scrollable.ensureVisible(
+      target,
+      duration: reduce ? Duration.zero : const Duration(milliseconds: 750),
+      curve: Curves.easeInOutCubic,
+      alignment: 0.08,
+    );
+  }
+
+  void _scrollToTop() {
+    final reduce = prefersReducedMotion(context);
+    _scrollController.animateTo(
+      0,
+      duration: reduce ? Duration.zero : const Duration(milliseconds: 700),
+      curve: Curves.easeInOutCubic,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
-    final isMobile = width < 768;
-    final isTablet = width >= 768 && width < 1024;
-    final maxWidth = width >= 1024
-        ? 900.0
-        : (isTablet ? 700.0 : double.infinity);
+    final wedding = context.wedding;
+    final size = MediaQuery.of(context).size;
+    final isMobile = size.width < 768;
+    final isTablet = size.width >= 768 && size.width < 1024;
+    final maxContent = size.width >= 1024
+        ? 1160.0
+        : (isTablet ? 760.0 : double.infinity);
+    final hPad = isMobile ? 20.0 : 40.0;
+    final heroHeight = size.height.clamp(560.0, 960.0);
+
     return Scaffold(
-      backgroundColor: const Color(0xFFFAFAF7),
-      body: SingleChildScrollView(
-        child: Center(
-          child: SizedBox(
-            width: maxWidth,
-            child: Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: isMobile ? 16 : 32,
-                vertical: isMobile ? 32 : 64,
-              ),
-              child: Column(
-                children: [
-                  _buildLanguageToggle(context),
-                  const SizedBox(height: 8),
-                  _buildHero(context, isMobile),
-                  const SizedBox(height: 48),
-                  _buildDetails(context),
-                  const SizedBox(height: 48),
-                  _buildCaption(context),
-                  const SizedBox(height: 48),
-                  _buildComments(context),
-                ],
-              ),
-            ),
-          ),
+      backgroundColor: AppColors.ivory,
+      extendBodyBehindAppBar: true,
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(68 + MediaQuery.of(context).padding.top),
+        child: SiteHeader(
+          musicController: widget.music,
+          onToggleLocale: () =>
+              widget.onToggleLocale(AppLocalizations.of(context).localeName),
+          onNavigate: (section) {
+            final wedding = context.wedding;
+            switch (section) {
+              case 'details':
+                _navigateTo(_detailsKey);
+                break;
+              case 'story':
+                if (wedding.hasStory) _navigateTo(_storyKey);
+                break;
+              case 'wishes':
+                if (wedding.showComments) _navigateTo(_wishesKey);
+                break;
+            }
+          },
+          isMobile: isMobile,
+          scrolled: _scrolled,
+          onHome: _scrollToTop,
         ),
       ),
-    );
-  }
-
-  Widget _buildLanguageToggle(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    final isArabic = l10n.localeName == 'ar';
-    return Align(
-      alignment: AlignmentDirectional.centerEnd,
-      child: Tooltip(
-        message: l10n.changeLanguage,
-        child: TextButton.icon(
-          onPressed: () => widget.onToggleLocale(l10n.localeName),
-          icon: const Icon(Icons.language),
-          label: Text(isArabic ? 'English' : 'العربية'),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildHero(BuildContext context, bool isMobile) {
-    final l10n = AppLocalizations.of(context);
-    return Column(
-      children: [
-        Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.08),
-                blurRadius: 16,
-                offset: const Offset(0, 8),
-              ),
-            ],
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: Image.asset(
-              'assets/images/wedding.jpg',
-              width: isMobile ? double.infinity : 560,
-              height: isMobile ? 280 : 360,
-              fit: BoxFit.cover,
-            ),
-          ),
-        ),
-        const SizedBox(height: 24),
-        Text(
-          'Adel',
-          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-            color: const Color(0xFF6B5B4F),
-          ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          '&',
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            color: const Color(0xFF8B7355),
-          ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          'Rahma',
-          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-            color: const Color(0xFF6B5B4F),
-          ),
-        ),
-        const SizedBox(height: 16),
-        Text(
-          l10n.weddingInvitation,
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            letterSpacing: 4,
-            color: const Color(0xFF8B7355),
-          ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          l10n.heroSubtitle,
-          style: Theme.of(context).textTheme.bodyMedium,
-          textAlign: TextAlign.center,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildDetails(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    return Container(
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.withValues(alpha: 0.1)),
-      ),
-      child: Column(
+      body: Stack(
         children: [
-          Text(
-            l10n.weddingDetails,
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              color: const Color(0xFF6B5B4F),
-            ),
-          ),
-          const SizedBox(height: 20),
-          Wrap(
-            spacing: 32,
-            runSpacing: 16,
-            alignment: WrapAlignment.center,
-            children: [
-              _detail(l10n.detailDate, l10n.weddingDate),
-              _detail(l10n.detailTime, l10n.weddingTime),
-              _detail(l10n.detailVenue, l10n.venueName),
-              _detail(l10n.detailLocation, l10n.weddingCity),
+          CustomScrollView(
+            controller: _scrollController,
+            slivers: [
+              SliverToBoxAdapter(
+                child: HeroSection(
+                  key: ValueKey(_showGate ? 'gated' : 'open'),
+                  isMobile: isMobile,
+                  height: heroHeight,
+                ),
+              ),
+              SliverToBoxAdapter(
+                child: _frame(
+                  sectionKey: _detailsKey,
+                  maxContent: maxContent,
+                  hPad: hPad,
+                  child: DetailsSection(
+                    onOpenMaps: _openGoogleMaps,
+                    isMobile: isMobile,
+                  ),
+                ),
+              ),
+              if (wedding.showCountdown)
+                SliverToBoxAdapter(
+                  child: _frame(
+                    maxContent: maxContent,
+                    hPad: hPad,
+                    background: AppColors.beige.withValues(alpha: 0.4),
+                    child: CountdownSection(isMobile: isMobile),
+                  ),
+                ),
+              if (wedding.hasStory)
+                SliverToBoxAdapter(
+                  child: _frame(
+                    sectionKey: _storyKey,
+                    maxContent: maxContent,
+                    hPad: hPad,
+                    child: StorySection(isMobile: isMobile),
+                  ),
+                ),
+              if (wedding.showComments)
+                SliverToBoxAdapter(
+                  child: _frame(
+                    sectionKey: _wishesKey,
+                    maxContent: maxContent,
+                    hPad: hPad,
+                    child: _buildWishes(context),
+                  ),
+                ),
+              SliverToBoxAdapter(
+                child: ClosingSection(isMobile: isMobile),
+              ),
             ],
           ),
-          const SizedBox(height: 20),
-          FilledButton.icon(
-            onPressed: _openGoogleMaps,
-            icon: const Icon(Icons.location_on_outlined, size: 18),
-            label: Text(l10n.openInGoogleMaps),
-          ),
+          if (_showGate)
+            Positioned.fill(
+              child: InvitationGate(
+                onOpen: _openGate,
+                opacity: _gateOpacity,
+                isMobile: isMobile,
+              ),
+            ),
         ],
       ),
     );
   }
 
-  Widget _detail(String label, String value) {
-    return Column(
-      children: [
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 12,
-            letterSpacing: 2,
-            color: Colors.grey,
+  Widget _frame({
+    required Widget child,
+    required double maxContent,
+    required double hPad,
+    GlobalKey? sectionKey,
+    Color? background,
+  }) {
+    return Container(
+      key: sectionKey,
+      width: double.infinity,
+      color: background,
+      child: Center(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(maxWidth: maxContent),
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(hPad, 72, hPad, 72),
+            child: RevealOnScroll(child: child),
           ),
         ),
-        const SizedBox(height: 4),
-        Text(value, style: const TextStyle(fontSize: 16)),
-      ],
-    );
-  }
-
-  Widget _buildCaption(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Text(
-        l10n.weddingMessage,
-        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-          height: 1.8,
-          color: const Color(0xFF6B5B4F),
-        ),
-        textAlign: TextAlign.center,
       ),
     );
   }
 
-  Widget _buildComments(BuildContext context) {
+  Widget _buildWishes(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
-          l10n.guestWishes,
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            color: const Color(0xFF6B5B4F),
+        SectionHeading(
+          eyebrow: l10n.weddingInvitation,
+          title: l10n.guestWishes,
+          subtitle: l10n.wishesSubtitle,
+        ),
+        const SizedBox(height: 36),
+        Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: AppColors.cream,
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: AppColors.line),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.espresso.withValues(alpha: 0.05),
+                blurRadius: 24,
+                offset: const Offset(0, 12),
+              ),
+            ],
+          ),
+          child: CommentForm(
+            formKey: _formKey,
+            nameController: _nameController,
+            commentController: _commentController,
+            accessCodeController: _accessCodeController,
+            isSubmitting: _isSubmitting,
+            submitMessage: _submitMessage,
+            submitSuccess: _submitSuccess,
+            onSubmit: _submitComment,
           ),
         ),
-        const SizedBox(height: 16),
-        CommentForm(
-          formKey: _formKey,
-          nameController: _nameController,
-          commentController: _commentController,
-          accessCodeController: _accessCodeController,
-          isSubmitting: _isSubmitting,
-          submitMessage: _submitMessage,
-          submitSuccess: _submitSuccess,
-          onSubmit: _submitComment,
-        ),
-        const SizedBox(height: 24),
-        if (_isLoadingComments)
-          const Center(child: LoadingIndicator())
-        else if (_commentsError != null)
-          ErrorState(
-            message: messageForFailure(l10n, _commentsError!),
-            onRetry: _loadComments,
-          )
-        else if (_comments.isEmpty)
-          const EmptyState()
-        else
-          ListView.separated(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: _comments.length,
-            separatorBuilder: (_, _) => const SizedBox(height: 12),
-            itemBuilder: (_, i) => CommentItem(
-              comment: _comments[i],
-              onEdit: () => _editComment(_comments[i]),
-              onDelete: () => _deleteComment(_comments[i]),
-            ),
-          ),
+        const SizedBox(height: 36),
+        _buildCommentsList(context),
       ],
+    );
+  }
+
+  Widget _buildCommentsList(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    if (_isLoadingComments) {
+      return const Center(child: LoadingIndicator());
+    }
+    if (_commentsError != null) {
+      return ErrorState(
+        message: messageForFailure(l10n, _commentsError!),
+        onRetry: _subscribeComments,
+      );
+    }
+    if (_comments.isEmpty) {
+      return const EmptyState();
+    }
+    return ListView.separated(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: _comments.length,
+      separatorBuilder: (_, _) => const SizedBox(height: 14),
+      itemBuilder: (_, i) => FadeSlideIn(
+        delay: Duration(milliseconds: (i.clamp(0, 6)) * 80),
+        child: CommentItem(
+          comment: _comments[i],
+          onEdit: () => _editComment(_comments[i]),
+          onDelete: () => _deleteComment(_comments[i]),
+        ),
+      ),
     );
   }
 }

@@ -10,17 +10,7 @@ class AppLocalizationsAr extends AppLocalizations {
   AppLocalizationsAr([String locale = 'ar']) : super(locale);
 
   @override
-  String get appTitle => 'دعوة زفاف Adel و Rahma';
-
-  @override
   String get weddingInvitation => 'دعوة الزفاف';
-
-  @override
-  String get heroSubtitle => 'ندعوكم لمشاركتنا فرحتنا في هذا اليوم المميز';
-
-  @override
-  String get weddingMessage =>
-      'بسم الله نبدأ أجمل حكاية ❤️\n\nلحظة طال انتظارها، وفرحة نتمنى أن تكون أجمل بوجودكم معنا.\n\nHappy to share our forever with you.\n\nAdel & Rahma';
 
   @override
   String get weddingDetails => 'تفاصيل الزفاف';
@@ -36,18 +26,6 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get detailLocation => 'المكان';
-
-  @override
-  String get weddingDate => '16/10/2026';
-
-  @override
-  String get weddingTime => '8:00 مساءً';
-
-  @override
-  String get venueName => 'Maryal Hall';
-
-  @override
-  String get weddingCity => 'بورسعيد، مصر';
 
   @override
   String get openInGoogleMaps => 'افتح في خرائط جوجل';
@@ -215,4 +193,71 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get changeLanguage => 'تغيير اللغة';
+
+  @override
+  String get openInvitation => 'افتح الدعوة';
+
+  @override
+  String get gateEyebrow => 'أنتم مدعوون للاحتفال بزفافنا';
+
+  @override
+  String get navDetails => 'التفاصيل';
+
+  @override
+  String get navStory => 'قصتنا';
+
+  @override
+  String get navWishes => 'الأمنيات';
+
+  @override
+  String get countdownTitle => 'العد التنازلي للأبد';
+
+  @override
+  String get countdownDays => 'أيام';
+
+  @override
+  String get countdownHours => 'ساعات';
+
+  @override
+  String get countdownMinutes => 'دقائق';
+
+  @override
+  String get countdownSeconds => 'ثوانٍ';
+
+  @override
+  String get countdownToday => 'اليوم نحتفل! 🎉';
+
+  @override
+  String get storyTitle => 'قصتنا';
+
+  @override
+  String get heroScrollHint => 'اسحب للاستكشاف';
+
+  @override
+  String get wishesSubtitle => 'اتركوا لنا كلمات سنحتفظ بها إلى الأبد';
+
+  @override
+  String get leaveAWish => 'اترك أمنية';
+
+  @override
+  String get closingTitle => 'بكل الحب، شكرًا لكم';
+
+  @override
+  String get closingMessage =>
+      'حضوركم أغلى هدية. لا نطيق الانتظار للاحتفال بهذه البداية الجميلة بين من نحب.';
+
+  @override
+  String get footerNote => 'صُنع بحب';
+
+  @override
+  String get playMusic => 'تشغيل الموسيقى';
+
+  @override
+  String get pauseMusic => 'إيقاف الموسيقى';
+
+  @override
+  String get muteMusic => 'كتم الموسيقى';
+
+  @override
+  String get unmuteMusic => 'إلغاء كتم الموسيقى';
 }

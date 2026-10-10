@@ -98,29 +98,11 @@ abstract class AppLocalizations {
     Locale('en'),
   ];
 
-  /// No description provided for @appTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Adel & Rahma Wedding'**
-  String get appTitle;
-
   /// No description provided for @weddingInvitation.
   ///
   /// In en, this message translates to:
   /// **'Wedding Invitation'**
   String get weddingInvitation;
-
-  /// No description provided for @heroSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'We invite you to share in our joy on this special day'**
-  String get heroSubtitle;
-
-  /// No description provided for @weddingMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'In the name of God, we begin the most beautiful story ❤️\n\nA moment long awaited, and a joy we wish becomes even more beautiful with you here with us.\n\nHappy to share our forever with you.\n\nAdel & Rahma'**
-  String get weddingMessage;
 
   /// No description provided for @weddingDetails.
   ///
@@ -151,30 +133,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Location'**
   String get detailLocation;
-
-  /// No description provided for @weddingDate.
-  ///
-  /// In en, this message translates to:
-  /// **'16/10/2026'**
-  String get weddingDate;
-
-  /// No description provided for @weddingTime.
-  ///
-  /// In en, this message translates to:
-  /// **'8:00 PM'**
-  String get weddingTime;
-
-  /// No description provided for @venueName.
-  ///
-  /// In en, this message translates to:
-  /// **'Maryal Hall'**
-  String get venueName;
-
-  /// No description provided for @weddingCity.
-  ///
-  /// In en, this message translates to:
-  /// **'Port Said, Egypt'**
-  String get weddingCity;
 
   /// No description provided for @openInGoogleMaps.
   ///
@@ -505,6 +463,138 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Change language'**
   String get changeLanguage;
+
+  /// No description provided for @openInvitation.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Invitation'**
+  String get openInvitation;
+
+  /// No description provided for @gateEyebrow.
+  ///
+  /// In en, this message translates to:
+  /// **'You are invited to celebrate our wedding'**
+  String get gateEyebrow;
+
+  /// No description provided for @navDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get navDetails;
+
+  /// No description provided for @navStory.
+  ///
+  /// In en, this message translates to:
+  /// **'Our Story'**
+  String get navStory;
+
+  /// No description provided for @navWishes.
+  ///
+  /// In en, this message translates to:
+  /// **'Wishes'**
+  String get navWishes;
+
+  /// No description provided for @countdownTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Counting down to forever'**
+  String get countdownTitle;
+
+  /// No description provided for @countdownDays.
+  ///
+  /// In en, this message translates to:
+  /// **'Days'**
+  String get countdownDays;
+
+  /// No description provided for @countdownHours.
+  ///
+  /// In en, this message translates to:
+  /// **'Hours'**
+  String get countdownHours;
+
+  /// No description provided for @countdownMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'Minutes'**
+  String get countdownMinutes;
+
+  /// No description provided for @countdownSeconds.
+  ///
+  /// In en, this message translates to:
+  /// **'Seconds'**
+  String get countdownSeconds;
+
+  /// No description provided for @countdownToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Today we celebrate! 🎉'**
+  String get countdownToday;
+
+  /// No description provided for @storyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Our Story'**
+  String get storyTitle;
+
+  /// No description provided for @heroScrollHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Scroll to explore'**
+  String get heroScrollHint;
+
+  /// No description provided for @wishesSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave us a few words we will treasure forever'**
+  String get wishesSubtitle;
+
+  /// No description provided for @leaveAWish.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave a wish'**
+  String get leaveAWish;
+
+  /// No description provided for @closingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'With love, thank you'**
+  String get closingTitle;
+
+  /// No description provided for @closingMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Your presence is the greatest gift of all. We cannot wait to celebrate this beautiful beginning surrounded by the people we love.'**
+  String get closingMessage;
+
+  /// No description provided for @footerNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Made with love'**
+  String get footerNote;
+
+  /// No description provided for @playMusic.
+  ///
+  /// In en, this message translates to:
+  /// **'Play music'**
+  String get playMusic;
+
+  /// No description provided for @pauseMusic.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause music'**
+  String get pauseMusic;
+
+  /// No description provided for @muteMusic.
+  ///
+  /// In en, this message translates to:
+  /// **'Mute music'**
+  String get muteMusic;
+
+  /// No description provided for @unmuteMusic.
+  ///
+  /// In en, this message translates to:
+  /// **'Unmute music'**
+  String get unmuteMusic;
 }
 
 class _AppLocalizationsDelegate
