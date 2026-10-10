@@ -9,9 +9,10 @@ enum MusicStatus { idle, loading, playing, paused, error }
 /// widget tree, so scrolling, locale changes and any other rebuilds never
 /// create a second player or restart the song.
 class MusicController extends ChangeNotifier {
-  MusicController({this.assetPath = 'audio/intro.mp3'});
+  MusicController({this.assetPath = ''});
 
-  /// Path relative to the `assets/` folder (declared in pubspec).
+  /// Path relative to the `assets/` folder (declared in pubspec). Supplied by
+  /// `main` from the active `WeddingConfig.musicAssetSource`.
   final String assetPath;
 
   AudioPlayer? _player;

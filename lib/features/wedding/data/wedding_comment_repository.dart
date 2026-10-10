@@ -2,6 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:wedding/features/wedding/data/comment_access_code.dart';
 import 'package:wedding/features/wedding/data/wedding_comment.dart';
 
+// Note: the private named parameters below are intentional (kept private for
+// the public API) so we silence the initializing-formal style suggestion.
+// ignore_for_file: prefer_initializing_formals
+
 enum CommentFailure {
   invalidCode,
   notFound,
@@ -70,8 +74,11 @@ CommentFailure mapFirestoreError(Object error, {CommentFailure? onDenied}) {
 }
 
 class WeddingCommentRepository {
-  WeddingCommentRepository([this._firestore]);
+  WeddingCommentRepository({String? weddingId, FirebaseFirestore? firestore})
+    : _weddingId = weddingId,
+      _firestore = firestore;
 
+  final String? _weddingId;
   FirebaseFirestore? _firestore;
 
   static const String commentsCollectionName = 'wedding_comments';
@@ -104,24 +111,37 @@ class WeddingCommentRepository {
     final comments = _comments;
     if (comments == null) return const Stream<List<WeddingComment>>.empty();
     try {
-      return comments
-          .orderBy('createdAt', descending: true)
-          .snapshots()
-          .map((snapshot) {
-            final parsed = <WeddingComment>[];
-            for (final doc in snapshot.docs) {
-              try {
-                parsed.add(WeddingComment.fromFirestore(doc));
-              } catch (_) {
-                // Skip malformed documents gracefully.
-              }
-            }
-            return parsed;
-          })
-          .handleError((_) {});
+      Query<Map<String, dynamic>> query = comments;
+      if (_weddingId != null && _weddingId.trim().isNotEmpty) {
+        query = query.where('weddingId', isEqualTo: _weddingId);
+      }
+      return query.snapshots().map(_parseAndSort).handleError((_) {});
     } catch (_) {
       return const Stream<List<WeddingComment>>.empty();
     }
+  }
+
+  List<WeddingComment> _parseAndSort(QuerySnapshot<Map<String, dynamic>> snapshot) {
+    final parsed = <WeddingComment>[];
+    for (final doc in snapshot.docs) {
+      try {
+        final comment = WeddingComment.fromFirestore(doc);
+        if (_weddingId != null &&
+            _weddingId.trim().isNotEmpty &&
+            comment.weddingId != _weddingId) {
+          continue;
+        }
+        parsed.add(comment);
+      } catch (_) {
+        // Skip malformed documents gracefully.
+      }
+    }
+    parsed.sort((a, b) {
+      final at = a.createdAt ?? Timestamp.fromMillisecondsSinceEpoch(0);
+      final bt = b.createdAt ?? Timestamp.fromMillisecondsSinceEpoch(0);
+      return bt.compareTo(at);
+    });
+    return parsed;
   }
 
   Future<CommentsLoadResult> getCommentsOnce() async {
@@ -132,18 +152,12 @@ class WeddingCommentRepository {
       );
     }
     try {
-      final snapshot = await comments
-          .orderBy('createdAt', descending: true)
-          .get();
-      final parsed = <WeddingComment>[];
-      for (final doc in snapshot.docs) {
-        try {
-          parsed.add(WeddingComment.fromFirestore(doc));
-        } catch (_) {
-          // Skip malformed documents gracefully.
-        }
+      Query<Map<String, dynamic>> query = comments;
+      if (_weddingId != null && _weddingId.trim().isNotEmpty) {
+        query = query.where('weddingId', isEqualTo: _weddingId);
       }
-      return CommentsLoadResult.success(parsed);
+      final snapshot = await query.get();
+      return CommentsLoadResult.success(_parseAndSort(snapshot));
     } catch (error) {
       return CommentsLoadResult.failure(mapFirestoreError(error));
     }
@@ -167,7 +181,11 @@ class WeddingCommentRepository {
       final commentRef = comments.doc();
       final ownerRef = owners.doc(commentRef.id);
       final batch = db.batch();
-      batch.set(commentRef, comment.toMapForCreate());
+      final commentData = comment.toMapForCreate();
+      if (_weddingId != null && _weddingId.trim().isNotEmpty) {
+        commentData['weddingId'] = _weddingId;
+      }
+      batch.set(commentRef, commentData);
       batch.set(ownerRef, {
         'commentId': commentRef.id,
         'codeHash': CommentAccessCode.digest(code),

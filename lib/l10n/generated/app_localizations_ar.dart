@@ -10,17 +10,7 @@ class AppLocalizationsAr extends AppLocalizations {
   AppLocalizationsAr([String locale = 'ar']) : super(locale);
 
   @override
-  String get appTitle => 'دعوة زفاف Adel و Rahma';
-
-  @override
   String get weddingInvitation => 'دعوة الزفاف';
-
-  @override
-  String get heroSubtitle => 'ندعوكم لمشاركتنا فرحتنا في هذا اليوم المميز';
-
-  @override
-  String get weddingMessage =>
-      'بسم الله نبدأ أجمل حكاية ❤️\n\nلحظة طال انتظارها، وفرحة نتمنى أن تكون أجمل بوجودكم معنا.\n\nHappy to share our forever with you.\n\nAdel & Rahma';
 
   @override
   String get weddingDetails => 'تفاصيل الزفاف';
@@ -36,18 +26,6 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get detailLocation => 'المكان';
-
-  @override
-  String get weddingDate => '16/10/2026';
-
-  @override
-  String get weddingTime => '8:00 مساءً';
-
-  @override
-  String get venueName => 'Maryal Hall';
-
-  @override
-  String get weddingCity => 'بورسعيد، مصر';
 
   @override
   String get openInGoogleMaps => 'افتح في خرائط جوجل';
@@ -251,14 +229,6 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get storyTitle => 'قصتنا';
-
-  @override
-  String get storyParagraph1 =>
-      'بدأت بتحيّة بسيطة، ثم كبرت لتصبح حبًّا لا نريد أن ينتهي. في كل فصل، وكل ضحكة، وكل لحظة هادئة، اخترنا بعضنا — مرّة تلو الأخرى.';
-
-  @override
-  String get storyParagraph2 =>
-      'واليوم نستعدّ لفصلنا التالي، ولن يكتمل إلا بوجودكم. شكرًا لأنكم جزء من قصتنا.';
 
   @override
   String get heroScrollHint => 'اسحب للاستكشاف';

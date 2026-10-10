@@ -98,29 +98,11 @@ abstract class AppLocalizations {
     Locale('en'),
   ];
 
-  /// No description provided for @appTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Adel & Rahma Wedding'**
-  String get appTitle;
-
   /// No description provided for @weddingInvitation.
   ///
   /// In en, this message translates to:
   /// **'Wedding Invitation'**
   String get weddingInvitation;
-
-  /// No description provided for @heroSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'We invite you to share in our joy on this special day'**
-  String get heroSubtitle;
-
-  /// No description provided for @weddingMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'In the name of God, we begin the most beautiful story ❤️\n\nA moment long awaited, and a joy we wish becomes even more beautiful with you here with us.\n\nHappy to share our forever with you.\n\nAdel & Rahma'**
-  String get weddingMessage;
 
   /// No description provided for @weddingDetails.
   ///
@@ -151,30 +133,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Location'**
   String get detailLocation;
-
-  /// No description provided for @weddingDate.
-  ///
-  /// In en, this message translates to:
-  /// **'16/10/2026'**
-  String get weddingDate;
-
-  /// No description provided for @weddingTime.
-  ///
-  /// In en, this message translates to:
-  /// **'8:00 PM'**
-  String get weddingTime;
-
-  /// No description provided for @venueName.
-  ///
-  /// In en, this message translates to:
-  /// **'Maryal Hall'**
-  String get venueName;
-
-  /// No description provided for @weddingCity.
-  ///
-  /// In en, this message translates to:
-  /// **'Port Said, Egypt'**
-  String get weddingCity;
 
   /// No description provided for @openInGoogleMaps.
   ///
@@ -577,18 +535,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Our Story'**
   String get storyTitle;
-
-  /// No description provided for @storyParagraph1.
-  ///
-  /// In en, this message translates to:
-  /// **'It began with a simple hello, and grew into a love we never want to end. Through every season, every laugh and every quiet moment, we chose each other — again and again.'**
-  String get storyParagraph1;
-
-  /// No description provided for @storyParagraph2.
-  ///
-  /// In en, this message translates to:
-  /// **'Now we are ready for the next chapter, and it would not be complete without you. Thank you for being part of our story.'**
-  String get storyParagraph2;
 
   /// No description provided for @heroScrollHint.
   ///

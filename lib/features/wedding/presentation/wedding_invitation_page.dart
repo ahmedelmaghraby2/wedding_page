@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:wedding/core/config/wedding_scope.dart';
 import 'package:wedding/core/failure_message.dart';
 import 'package:wedding/core/motion/reveal.dart';
 import 'package:wedding/core/music/music_controller.dart';
@@ -40,7 +41,7 @@ class WeddingInvitationPage extends StatefulWidget {
 
 class _WeddingInvitationPageState extends State<WeddingInvitationPage>
     with SingleTickerProviderStateMixin {
-  final _commentsRepository = WeddingCommentRepository();
+  late final WeddingCommentRepository _commentsRepository;
   final _nameController = TextEditingController();
   final _commentController = TextEditingController();
   final _accessCodeController = TextEditingController();
@@ -69,6 +70,9 @@ class _WeddingInvitationPageState extends State<WeddingInvitationPage>
   @override
   void initState() {
     super.initState();
+    _commentsRepository = WeddingCommentRepository(
+      weddingId: WeddingScope.ofTree(context).weddingId,
+    );
     _subscribeComments();
     _scrollController.addListener(_onScroll);
   }
@@ -183,7 +187,8 @@ class _WeddingInvitationPageState extends State<WeddingInvitationPage>
     final code = await showAccessCodeDialog(
       context,
       title: l10n.enterAccessCodeTitle,
-      onVerify: (value) => _commentsRepository.verifyAccessCode(id, value),
+      onVerify: (value) =>
+          _commentsRepository.verifyAccessCode(id, value),
     );
     if (code == null || !mounted) return;
     final updated = await showEditCommentDialog(
@@ -204,7 +209,8 @@ class _WeddingInvitationPageState extends State<WeddingInvitationPage>
     final code = await showAccessCodeDialog(
       context,
       title: l10n.enterAccessCodeTitle,
-      onVerify: (value) => _commentsRepository.verifyAccessCode(id, value),
+      onVerify: (value) =>
+          _commentsRepository.verifyAccessCode(id, value),
     );
     if (code == null || !mounted) return;
     final deleted = await showDeleteConfirmDialog(
@@ -218,7 +224,7 @@ class _WeddingInvitationPageState extends State<WeddingInvitationPage>
   }
 
   Future<void> _openGoogleMaps() async {
-    const url = 'https://maps.app.goo.gl/Aa2HcwvPYXmNtvdL7';
+    final url = context.wedding.event.mapsUrl;
     final l10n = AppLocalizations.of(context);
     try {
       final uri = Uri.parse(url);
@@ -261,6 +267,7 @@ class _WeddingInvitationPageState extends State<WeddingInvitationPage>
 
   @override
   Widget build(BuildContext context) {
+    final wedding = context.wedding;
     final size = MediaQuery.of(context).size;
     final isMobile = size.width < 768;
     final isTablet = size.width >= 768 && size.width < 1024;
@@ -280,15 +287,16 @@ class _WeddingInvitationPageState extends State<WeddingInvitationPage>
           onToggleLocale: () =>
               widget.onToggleLocale(AppLocalizations.of(context).localeName),
           onNavigate: (section) {
+            final wedding = context.wedding;
             switch (section) {
               case 'details':
                 _navigateTo(_detailsKey);
                 break;
               case 'story':
-                _navigateTo(_storyKey);
+                if (wedding.hasStory) _navigateTo(_storyKey);
                 break;
               case 'wishes':
-                _navigateTo(_wishesKey);
+                if (wedding.showComments) _navigateTo(_wishesKey);
                 break;
             }
           },
@@ -320,30 +328,33 @@ class _WeddingInvitationPageState extends State<WeddingInvitationPage>
                   ),
                 ),
               ),
-              SliverToBoxAdapter(
-                child: _frame(
-                  maxContent: maxContent,
-                  hPad: hPad,
-                  background: AppColors.beige.withValues(alpha: 0.4),
-                  child: CountdownSection(isMobile: isMobile),
+              if (wedding.showCountdown)
+                SliverToBoxAdapter(
+                  child: _frame(
+                    maxContent: maxContent,
+                    hPad: hPad,
+                    background: AppColors.beige.withValues(alpha: 0.4),
+                    child: CountdownSection(isMobile: isMobile),
+                  ),
                 ),
-              ),
-              SliverToBoxAdapter(
-                child: _frame(
-                  sectionKey: _storyKey,
-                  maxContent: maxContent,
-                  hPad: hPad,
-                  child: StorySection(isMobile: isMobile),
+              if (wedding.hasStory)
+                SliverToBoxAdapter(
+                  child: _frame(
+                    sectionKey: _storyKey,
+                    maxContent: maxContent,
+                    hPad: hPad,
+                    child: StorySection(isMobile: isMobile),
+                  ),
                 ),
-              ),
-              SliverToBoxAdapter(
-                child: _frame(
-                  sectionKey: _wishesKey,
-                  maxContent: maxContent,
-                  hPad: hPad,
-                  child: _buildWishes(context),
+              if (wedding.showComments)
+                SliverToBoxAdapter(
+                  child: _frame(
+                    sectionKey: _wishesKey,
+                    maxContent: maxContent,
+                    hPad: hPad,
+                    child: _buildWishes(context),
+                  ),
                 ),
-              ),
               SliverToBoxAdapter(
                 child: ClosingSection(isMobile: isMobile),
               ),

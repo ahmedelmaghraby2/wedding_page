@@ -1,11 +1,11 @@
 {
-    "name": "Adel & Rahma Wedding",
+    "name": "Ahmed & Aya Wedding",
     "short_name": "A & R Wedding",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#FAFAF7",
     "theme_color": "#8B7355",
-    "description": "Adel & Rahma Wedding Invitation - Share our joy on this special day.",
+    "description": "Ahmed & Aya Wedding Invitation - Share our joy on this special day.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

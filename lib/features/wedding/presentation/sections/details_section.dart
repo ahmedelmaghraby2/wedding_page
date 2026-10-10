@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:wedding/core/config/wedding_scope.dart';
 import 'package:wedding/core/theme/app_colors.dart';
 import 'package:wedding/l10n/generated/app_localizations.dart';
 import 'package:wedding/widgets/section.dart';
@@ -16,7 +17,10 @@ class DetailsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final wedding = context.wedding;
+    final locale = context.localeCode;
     final l10n = AppLocalizations.of(context);
+    final details = wedding.event;
 
     return Column(
       children: [
@@ -52,22 +56,22 @@ class DetailsSection extends StatelessWidget {
                   _DetailItem(
                     icon: Icons.event_outlined,
                     label: l10n.detailDate,
-                    value: l10n.weddingDate,
+                    value: details.date.resolve(locale),
                   ),
                   _DetailItem(
                     icon: Icons.access_time,
                     label: l10n.detailTime,
-                    value: l10n.weddingTime,
+                    value: details.time.resolve(locale),
                   ),
                   _DetailItem(
                     icon: Icons.home_work_outlined,
                     label: l10n.detailVenue,
-                    value: l10n.venueName,
+                    value: details.venue.resolve(locale),
                   ),
                   _DetailItem(
                     icon: Icons.map_outlined,
                     label: l10n.detailLocation,
-                    value: l10n.weddingCity,
+                    value: details.city.resolve(locale),
                   ),
                 ],
               ),

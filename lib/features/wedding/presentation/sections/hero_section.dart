@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:wedding/core/config/wedding_scope.dart';
 import 'package:wedding/core/motion/reveal.dart';
 import 'package:wedding/core/theme/app_colors.dart';
 import 'package:wedding/l10n/generated/app_localizations.dart';
@@ -13,6 +14,8 @@ class HeroSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final wedding = context.wedding;
+    final locale = context.localeCode;
     final l10n = AppLocalizations.of(context);
     final text = Theme.of(context).textTheme;
     final shadow = [
@@ -32,7 +35,7 @@ class HeroSection extends StatelessWidget {
         fit: StackFit.expand,
         children: [
           Image.asset(
-            'assets/images/wedding.jpg',
+            wedding.heroImage,
             fit: BoxFit.cover,
             filterQuality: FilterQuality.medium,
           ),
@@ -72,7 +75,10 @@ class HeroSection extends StatelessWidget {
                     const SizedBox(height: 18),
                     FadeSlideIn(
                       delay: const Duration(milliseconds: 150),
-                      child: Text('Adel', style: nameStyle),
+                      child: Text(
+                        wedding.groom.resolve(locale),
+                        style: nameStyle,
+                      ),
                     ),
                     FadeSlideIn(
                       delay: const Duration(milliseconds: 250),
@@ -89,7 +95,10 @@ class HeroSection extends StatelessWidget {
                     ),
                     FadeSlideIn(
                       delay: const Duration(milliseconds: 350),
-                      child: Text('Rahma', style: nameStyle),
+                      child: Text(
+                        wedding.bride.resolve(locale),
+                        style: nameStyle,
+                      ),
                     ),
                     const SizedBox(height: 22),
                     FadeSlideIn(
@@ -102,7 +111,7 @@ class HeroSection extends StatelessWidget {
                       child: ConstrainedBox(
                         constraints: const BoxConstraints(maxWidth: 520),
                         child: Text(
-                          l10n.heroSubtitle,
+                          wedding.caption.resolve(locale),
                           textAlign: TextAlign.center,
                           style: text.bodyLarge?.copyWith(
                             color: AppColors.cream,

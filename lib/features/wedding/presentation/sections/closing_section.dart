@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:wedding/core/config/wedding_scope.dart';
 import 'package:wedding/core/theme/app_colors.dart';
 import 'package:wedding/l10n/generated/app_localizations.dart';
 import 'package:wedding/widgets/ornaments.dart';
@@ -11,6 +12,8 @@ class ClosingSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final wedding = context.wedding;
+    final locale = context.localeCode;
     final l10n = AppLocalizations.of(context);
     final text = Theme.of(context).textTheme;
 
@@ -29,7 +32,7 @@ class ClosingSection extends StatelessWidget {
       ),
       child: Column(
         children: [
-          const MonogramBadge(size: 72),
+          MonogramBadge(size: 72, label: wedding.monogramLabel),
           const SizedBox(height: 26),
           Text(
             l10n.closingTitle,
@@ -52,7 +55,7 @@ class ClosingSection extends StatelessWidget {
           const GoldDivider(width: 220),
           const SizedBox(height: 24),
           Text(
-            'Adel  &  Rahma',
+            '${wedding.groom.resolve(locale)}  &  ${wedding.bride.resolve(locale)}',
             style: TextStyle(
               fontFamily: 'GreatVibes',
               fontSize: isMobile ? 34 : 44,
@@ -62,7 +65,7 @@ class ClosingSection extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            l10n.weddingDate,
+            wedding.event.date.resolve(locale),
             style: text.labelMedium?.copyWith(
               color: AppColors.taupe,
               letterSpacing: 3,
@@ -75,7 +78,7 @@ class ClosingSection extends StatelessWidget {
               const FloralSprig(size: 20, flip: true),
               const SizedBox(width: 12),
               Text(
-                '${l10n.footerNote} · Adel & Rahma',
+                '${l10n.footerNote} · ${wedding.developer.resolve(locale)}',
                 style: text.labelSmall?.copyWith(
                   color: AppColors.taupeLight,
                   letterSpacing: 2,

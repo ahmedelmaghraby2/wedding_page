@@ -41,6 +41,13 @@ void main() {
       expect(map['fullName'], '');
       expect(map['comment'], '');
       expect(map['avatarSeed'], 'Guest');
+      expect(map['weddingId'], '');
+    });
+
+    test('toMapForCreate keeps a provided weddingId', () {
+      const comment = WeddingComment(weddingId: 'ahmed-aya');
+      final map = comment.toMapForCreate();
+      expect(map['weddingId'], 'ahmed-aya');
     });
   });
 }

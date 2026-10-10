@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:wedding/core/config/wedding_scope.dart';
 import 'package:wedding/core/theme/app_colors.dart';
 import 'package:wedding/l10n/generated/app_localizations.dart';
 import 'package:wedding/widgets/ornaments.dart';
@@ -20,6 +21,8 @@ class InvitationGate extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final wedding = context.wedding;
+    final locale = context.localeCode;
     final l10n = AppLocalizations.of(context);
     final text = Theme.of(context).textTheme;
 
@@ -54,7 +57,7 @@ class InvitationGate extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const MonogramBadge(size: 84),
+              MonogramBadge(size: 84, label: wedding.monogramLabel),
               const SizedBox(height: 28),
               Text(
                 l10n.gateEyebrow,
@@ -63,7 +66,7 @@ class InvitationGate extends StatelessWidget {
               ),
               const SizedBox(height: 18),
               Text(
-                'Adel',
+                wedding.groom.resolve(locale),
                 style: (isMobile ? text.displayMedium : text.displayLarge)
                     ?.copyWith(color: AppColors.espresso),
               ),
@@ -77,7 +80,7 @@ class InvitationGate extends StatelessWidget {
                 ),
               ),
               Text(
-                'Rahma',
+                wedding.bride.resolve(locale),
                 style: (isMobile ? text.displayMedium : text.displayLarge)
                     ?.copyWith(color: AppColors.espresso),
               ),

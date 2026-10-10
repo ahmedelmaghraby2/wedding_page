@@ -2,24 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import 'package:wedding/core/config/wedding_scope.dart';
 import 'package:wedding/core/motion/reveal.dart';
 import 'package:wedding/core/theme/app_colors.dart';
 import 'package:wedding/l10n/generated/app_localizations.dart';
 import 'package:wedding/widgets/section.dart';
-
-/// Wedding moment expressed as a fixed instant.
-///
-/// The local event time is 16/10/2026 20:00 (Africa/Cairo, UTC+3 during
-/// daylight saving). Adjust [cairoOffsetHours] if the timezone rules change.
-const int cairoOffsetHours = 3;
-final DateTime weddingInstant = DateTime.utc(
-  2026,
-  10,
-  16,
-  20 - cairoOffsetHours,
-  0,
-  0,
-);
 
 class CountdownSection extends StatefulWidget {
   const CountdownSection({super.key, required this.isMobile});
@@ -33,10 +20,13 @@ class CountdownSection extends StatefulWidget {
 class _CountdownSectionState extends State<CountdownSection> {
   Timer? _timer;
   Duration _remaining = Duration.zero;
+  late final DateTime _instant;
 
   @override
   void initState() {
     super.initState();
+    _instant = WeddingScope.ofTree(context).event.countdownDateTime ??
+        DateTime.now().toUtc();
     _tick();
     _timer = Timer.periodic(const Duration(seconds: 1), (_) => _tick());
   }
@@ -48,7 +38,7 @@ class _CountdownSectionState extends State<CountdownSection> {
   }
 
   void _tick() {
-    final diff = weddingInstant.difference(DateTime.now().toUtc());
+    final diff = _instant.difference(DateTime.now().toUtc());
     if (!mounted) return;
     setState(() => _remaining = diff.isNegative ? Duration.zero : diff);
   }
@@ -56,9 +46,7 @@ class _CountdownSectionState extends State<CountdownSection> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final passed = weddingInstant
-        .difference(DateTime.now().toUtc())
-        .isNegative;
+    final passed = _instant.difference(DateTime.now().toUtc()).isNegative;
 
     return Column(
       children: [

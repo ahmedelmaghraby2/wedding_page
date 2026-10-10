@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
+import 'package:wedding/core/config/wedding_scope.dart';
 import 'package:wedding/core/music/music_controller.dart';
 import 'package:wedding/core/theme/app_colors.dart';
 import 'package:wedding/l10n/generated/app_localizations.dart';
@@ -28,8 +29,9 @@ class SiteHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final wedding = context.wedding;
     final l10n = AppLocalizations.of(context);
-    final isArabic = l10n.localeName == 'ar';
+    final isArabic = context.localeCode == 'ar';
 
     return ClipRect(
       child: BackdropFilter(
@@ -60,9 +62,23 @@ class SiteHeader extends StatelessWidget {
                   _Brand(onTap: onHome, showName: !isMobile),
                   const Spacer(),
                   if (!isMobile) ...[
-                    _navItem(context, l10n.navDetails, () => onNavigate('details')),
-                    _navItem(context, l10n.navStory, () => onNavigate('story')),
-                    _navItem(context, l10n.navWishes, () => onNavigate('wishes')),
+                    _navItem(
+                      context,
+                      l10n.navDetails,
+                      () => onNavigate('details'),
+                    ),
+                    if (wedding.hasStory)
+                      _navItem(
+                        context,
+                        l10n.navStory,
+                        () => onNavigate('story'),
+                      ),
+                    if (wedding.showComments)
+                      _navItem(
+                        context,
+                        l10n.navWishes,
+                        () => onNavigate('wishes'),
+                      ),
                     const SizedBox(width: 8),
                   ],
                   Tooltip(
@@ -97,10 +113,8 @@ class SiteHeader extends StatelessWidget {
         onPressed: onTap,
         style: TextButton.styleFrom(
           foregroundColor: AppColors.espresso,
-          textStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            letterSpacing: 1.5,
-            color: AppColors.espresso,
-          ),
+          textStyle: Theme.of(context).textTheme.bodyMedium
+              ?.copyWith(letterSpacing: 1.5, color: AppColors.espresso),
         ),
         child: Text(label),
       ),
@@ -144,6 +158,8 @@ class _Brand extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final wedding = context.wedding;
+    final locale = context.localeCode;
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(40),
@@ -151,15 +167,13 @@ class _Brand extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
         child: Row(
           children: [
-            const MonogramBadge(size: 40, label: 'A&R'),
+            MonogramBadge(size: 40, label: wedding.monogramLabel),
             if (showName) ...[
               const SizedBox(width: 12),
               Text(
-                'Adel & Rahma',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: AppColors.espresso,
-                  letterSpacing: 1,
-                ),
+                '${wedding.groom.resolve(locale)} & ${wedding.bride.resolve(locale)}',
+                style: Theme.of(context).textTheme.titleMedium
+                    ?.copyWith(color: AppColors.espresso, letterSpacing: 1),
               ),
             ],
           ],
