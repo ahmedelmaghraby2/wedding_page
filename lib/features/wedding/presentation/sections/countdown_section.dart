@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:wedding/core/config/wedding_scope.dart';
 import 'package:wedding/core/motion/reveal.dart';
 import 'package:wedding/core/theme/app_colors.dart';
+import 'package:wedding/features/wedding/domain/countdown.dart';
 import 'package:wedding/l10n/generated/app_localizations.dart';
 import 'package:wedding/widgets/section.dart';
 
@@ -27,8 +28,10 @@ class _CountdownSectionState extends State<CountdownSection> {
     super.initState();
     _instant = WeddingScope.ofTree(context).event.countdownDateTime ??
         DateTime.now().toUtc();
-    _tick();
-    _timer = Timer.periodic(const Duration(seconds: 1), (_) => _tick());
+    _remaining = timeUntil(_instant);
+    if (_remaining > Duration.zero) {
+      _timer = Timer.periodic(const Duration(seconds: 1), (_) => _tick());
+    }
   }
 
   @override
@@ -38,15 +41,19 @@ class _CountdownSectionState extends State<CountdownSection> {
   }
 
   void _tick() {
-    final diff = _instant.difference(DateTime.now().toUtc());
+    final diff = timeUntil(_instant);
+    if (diff == Duration.zero) {
+      _timer?.cancel();
+      _timer = null;
+    }
     if (!mounted) return;
-    setState(() => _remaining = diff.isNegative ? Duration.zero : diff);
+    setState(() => _remaining = diff);
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final passed = _instant.difference(DateTime.now().toUtc()).isNegative;
+    final passed = _remaining == Duration.zero;
 
     return Column(
       children: [

@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:wedding/features/wedding/data/comment_access_code.dart';
+import 'package:wedding/features/wedding/domain/comment_access_code.dart';
 
 void main() {
   group('CommentAccessCode.generate', () {

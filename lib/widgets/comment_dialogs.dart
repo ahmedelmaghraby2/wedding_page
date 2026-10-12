@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:wedding/core/failure_message.dart';
-import 'package:wedding/features/wedding/data/comment_access_code.dart';
-import 'package:wedding/features/wedding/data/wedding_comment_repository.dart';
+import 'package:wedding/features/wedding/domain/comment_access_code.dart';
+import 'package:wedding/features/wedding/domain/comment_failure.dart';
+import 'package:wedding/features/wedding/presentation/failure_message.dart';
 import 'package:wedding/l10n/generated/app_localizations.dart';
 
 Future<String?> showAccessCodeDialog(

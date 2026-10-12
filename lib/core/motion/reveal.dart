@@ -106,6 +106,7 @@ class _RevealOnScrollState extends State<RevealOnScroll>
     parent: _controller,
     curve: widget.curve,
   );
+  final Key _visibilityKey = UniqueKey();
   bool _triggered = false;
 
   @override
@@ -134,7 +135,7 @@ class _RevealOnScrollState extends State<RevealOnScroll>
   @override
   Widget build(BuildContext context) {
     return VisibilityDetector(
-      key: UniqueKey(),
+      key: _visibilityKey,
       onVisibilityChanged: _onVisibilityChanged,
       child: AnimatedBuilder(
         animation: _curve,

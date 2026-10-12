@@ -20,6 +20,7 @@
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
   <meta name="description" content="Ahmed & Aya Wedding Invitation - Share our joy on this special day.">
+  <meta name="theme-color" content="#FAF7F2">
 
   <!-- Open Graph meta tags (update per couple when creating a new site) -->
   <meta property="og:title" content="Ahmed & Aya Wedding Invitation">
@@ -39,9 +40,42 @@
 
   <title>Ahmed & Aya Wedding Invitation</title>
   <link rel="manifest" href="manifest.json">
+  <style>
+    #boot-loader {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #FAF7F2;
+      z-index: 9999;
+      transition: opacity 0.4s ease;
+    }
+
+    #boot-loader.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    #boot-loader .ring {
+      width: 42px;
+      height: 42px;
+      border: 3px solid #EDE4D8;
+      border-top-color: #A8863F;
+      border-radius: 50%;
+      animation: boot-spin 1s linear infinite;
+    }
+
+    @keyframes boot-spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
 </head>
 
 <body>
+  <div id="boot-loader" aria-hidden="true"><div class="ring"></div></div>
   <!--
     You can customize the "flutter_bootstrap.js" script.
     This is useful to provide a custom configuration to the Flutter loader
@@ -51,6 +85,14 @@
     * https://docs.flutter.dev/platform-integration/web/initialization
   -->
   <script src="flutter_bootstrap.js" async></script>
+  <script>
+    window.addEventListener('flutter-first-frame', function () {
+      var el = document.getElementById('boot-loader');
+      if (!el) return;
+      el.classList.add('hidden');
+      window.setTimeout(function () { el.remove(); }, 450);
+    });
+  </script>
 </body>
 
 </html>

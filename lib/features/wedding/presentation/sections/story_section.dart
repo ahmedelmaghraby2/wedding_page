@@ -174,7 +174,14 @@ class _FramedPhoto extends StatelessWidget {
             ),
           ],
         ),
-        child: Image.asset(asset, fit: BoxFit.cover),
+        child: Image.asset(
+          asset,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) => const ColoredBox(
+            color: AppColors.beige,
+            child: SizedBox.expand(),
+          ),
+        ),
       ),
     );
   }

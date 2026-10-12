@@ -1,57 +1,64 @@
 import 'package:flutter/material.dart';
 
-import 'package:wedding/core/music/music_controller.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wedding/core/theme/app_colors.dart';
+import 'package:wedding/features/wedding/application/music_cubit.dart';
 
 /// A compact, elegant play/pause control that reflects real playback state.
 class MusicButton extends StatelessWidget {
   const MusicButton({
     super.key,
-    required this.controller,
+    required this.cubit,
     this.tooltip,
     this.foreground = AppColors.goldDeep,
   });
 
-  final MusicController controller;
+  final MusicCubit cubit;
   final String? tooltip;
   final Color foreground;
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: controller,
-      builder: (context, _) {
-        final isPlaying = controller.isPlaying;
-        final isLoading = controller.status == MusicStatus.loading;
-        final hasError = controller.hasError;
-        return Tooltip(
-          message: tooltip ?? (isPlaying ? 'Pause' : 'Play'),
-          child: Material(
-            color: AppColors.cream,
-            shape: const CircleBorder(
-              side: BorderSide(color: AppColors.champagne),
-            ),
-            child: InkWell(
-              customBorder: const CircleBorder(),
-              onTap: isLoading ? null : controller.togglePlayPause,
-              child: SizedBox(
-                width: 44,
-                height: 44,
-                child: Center(
-                  child: isLoading
-                      ? const SizedBox(
-                          width: 18,
-                          height: 18,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: AppColors.champagne,
+    return BlocBuilder<MusicCubit, MusicState>(
+      bloc: cubit,
+      builder: (context, state) {
+        final isPlaying = state.isPlaying;
+        final isLoading = state.isLoading;
+        final hasError = state.hasError;
+        final label = tooltip ?? (isPlaying ? 'Pause' : 'Play');
+        return Semantics(
+          button: true,
+          enabled: !isLoading,
+          label: label,
+          child: Tooltip(
+            message: label,
+            child: Material(
+              color: AppColors.cream,
+              shape: const CircleBorder(
+                side: BorderSide(color: AppColors.champagne),
+              ),
+              child: InkWell(
+                customBorder: const CircleBorder(),
+                onTap: isLoading ? null : cubit.togglePlayPause,
+                child: SizedBox(
+                  width: 44,
+                  height: 44,
+                  child: Center(
+                    child: isLoading
+                        ? const SizedBox(
+                            width: 18,
+                            height: 18,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: AppColors.champagne,
+                            ),
+                          )
+                        : _EqualizerIcon(
+                            playing: isPlaying,
+                            hasError: hasError,
+                            color: foreground,
                           ),
-                        )
-                      : _EqualizerIcon(
-                          playing: isPlaying,
-                          hasError: hasError,
-                          color: foreground,
-                        ),
+                  ),
                 ),
               ),
             ),

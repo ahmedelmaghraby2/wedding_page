@@ -38,6 +38,20 @@ class HeroSection extends StatelessWidget {
             wedding.heroImage,
             fit: BoxFit.cover,
             filterQuality: FilterQuality.medium,
+            errorBuilder: (context, error, stackTrace) => const DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    AppColors.beige,
+                    AppColors.blush,
+                    AppColors.champagne,
+                  ],
+                ),
+              ),
+              child: SizedBox.expand(),
+            ),
           ),
           DecoratedBox(
             decoration: BoxDecoration(

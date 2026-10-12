@@ -1,51 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:wedding/features/wedding/data/comment_access_code.dart';
-import 'package:wedding/features/wedding/data/wedding_comment.dart';
+import 'package:wedding/features/wedding/data/wedding_comment_mapper.dart';
+import 'package:wedding/features/wedding/domain/comment_access_code.dart';
+import 'package:wedding/features/wedding/domain/comment_failure.dart';
+import 'package:wedding/features/wedding/domain/comments_repository.dart';
+import 'package:wedding/features/wedding/domain/wedding_comment.dart';
 
-// Note: the private named parameters below are intentional (kept private for
-// the public API) so we silence the initializing-formal style suggestion.
+// The public constructor takes `weddingId`/`firestore` but stores them in
+// private fields (intentional encapsulation), so the initializing-formal
+// suggestion cannot apply here.
 // ignore_for_file: prefer_initializing_formals
 
-enum CommentFailure {
-  invalidCode,
-  notFound,
-  network,
-  permissionDenied,
-  invalidData,
-  conflict,
-  firebaseUnavailable,
-  unknown,
-}
-
-class CommentResult {
-  const CommentResult._(this.failure);
-
-  const CommentResult.success() : this._(null);
-
-  const CommentResult.failure(CommentFailure failure) : this._(failure);
-
-  final CommentFailure? failure;
-
-  bool get isSuccess => failure == null;
-
-  bool get isFailure => failure != null;
-}
-
-class CommentsLoadResult {
-  const CommentsLoadResult._(this.comments, this.failure);
-
-  const CommentsLoadResult.success(List<WeddingComment> comments)
-    : this._(comments, null);
-
-  const CommentsLoadResult.failure(CommentFailure failure)
-    : this._(const [], failure);
-
-  final List<WeddingComment> comments;
-  final CommentFailure? failure;
-
-  bool get isSuccess => failure == null;
-}
-
+/// Maps Firestore exceptions to the storage-agnostic [CommentFailure] domain.
 CommentFailure mapFirestoreError(Object error, {CommentFailure? onDenied}) {
   if (error is FirebaseException) {
     switch (error.code) {
@@ -73,16 +38,23 @@ CommentFailure mapFirestoreError(Object error, {CommentFailure? onDenied}) {
   return CommentFailure.unknown;
 }
 
-class WeddingCommentRepository {
-  WeddingCommentRepository({String? weddingId, FirebaseFirestore? firestore})
+/// Firestore-backed [CommentsRepository]. Scopes every read/write to the active
+/// `weddingId` so a single database can serve many couples' sites.
+class FirebaseCommentsRepository implements CommentsRepository {
+  FirebaseCommentsRepository({String? weddingId, FirebaseFirestore? firestore})
     : _weddingId = weddingId,
       _firestore = firestore;
+
+  static const String commentsCollectionName = 'wedding_comments';
+  static const String ownersCollectionName = 'comment_owners';
 
   final String? _weddingId;
   FirebaseFirestore? _firestore;
 
-  static const String commentsCollectionName = 'wedding_comments';
-  static const String ownersCollectionName = 'comment_owners';
+  String? get _scopedWeddingId {
+    final id = _weddingId?.trim();
+    return (id == null || id.isEmpty) ? null : id;
+  }
 
   FirebaseFirestore? get _db {
     final existing = _firestore;
@@ -97,38 +69,41 @@ class WeddingCommentRepository {
 
   CollectionReference<Map<String, dynamic>>? get _comments {
     final db = _db;
-    if (db == null) return null;
-    return db.collection(commentsCollectionName);
+    return db?.collection(commentsCollectionName);
   }
 
   CollectionReference<Map<String, dynamic>>? get _owners {
     final db = _db;
-    if (db == null) return null;
-    return db.collection(ownersCollectionName);
+    return db?.collection(ownersCollectionName);
   }
 
-  Stream<List<WeddingComment>> getCommentsStream() {
+  @override
+  Stream<List<WeddingComment>> watchComments() {
     final comments = _comments;
-    if (comments == null) return const Stream<List<WeddingComment>>.empty();
+    if (comments == null) {
+      return const Stream<List<WeddingComment>>.empty();
+    }
     try {
       Query<Map<String, dynamic>> query = comments;
-      if (_weddingId != null && _weddingId.trim().isNotEmpty) {
-        query = query.where('weddingId', isEqualTo: _weddingId);
+      final id = _scopedWeddingId;
+      if (id != null) {
+        query = query.where('weddingId', isEqualTo: id);
       }
-      return query.snapshots().map(_parseAndSort).handleError((_) {});
+      return query.snapshots().map(_parseAndSort);
     } catch (_) {
       return const Stream<List<WeddingComment>>.empty();
     }
   }
 
-  List<WeddingComment> _parseAndSort(QuerySnapshot<Map<String, dynamic>> snapshot) {
+  List<WeddingComment> _parseAndSort(
+    QuerySnapshot<Map<String, dynamic>> snapshot,
+  ) {
+    final scoped = _scopedWeddingId;
     final parsed = <WeddingComment>[];
     for (final doc in snapshot.docs) {
       try {
-        final comment = WeddingComment.fromFirestore(doc);
-        if (_weddingId != null &&
-            _weddingId.trim().isNotEmpty &&
-            comment.weddingId != _weddingId) {
+        final comment = WeddingCommentMapper.fromSnapshot(doc);
+        if (scoped != null && comment.weddingId != scoped) {
           continue;
         }
         parsed.add(comment);
@@ -137,13 +112,14 @@ class WeddingCommentRepository {
       }
     }
     parsed.sort((a, b) {
-      final at = a.createdAt ?? Timestamp.fromMillisecondsSinceEpoch(0);
-      final bt = b.createdAt ?? Timestamp.fromMillisecondsSinceEpoch(0);
+      final at = a.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+      final bt = b.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0);
       return bt.compareTo(at);
     });
     return parsed;
   }
 
+  @override
   Future<CommentsLoadResult> getCommentsOnce() async {
     final comments = _comments;
     if (comments == null) {
@@ -153,8 +129,9 @@ class WeddingCommentRepository {
     }
     try {
       Query<Map<String, dynamic>> query = comments;
-      if (_weddingId != null && _weddingId.trim().isNotEmpty) {
-        query = query.where('weddingId', isEqualTo: _weddingId);
+      final id = _scopedWeddingId;
+      if (id != null) {
+        query = query.where('weddingId', isEqualTo: id);
       }
       final snapshot = await query.get();
       return CommentsLoadResult.success(_parseAndSort(snapshot));
@@ -163,6 +140,7 @@ class WeddingCommentRepository {
     }
   }
 
+  @override
   Future<CommentResult> addComment(
     WeddingComment comment,
     String accessCode,
@@ -181,11 +159,10 @@ class WeddingCommentRepository {
       final commentRef = comments.doc();
       final ownerRef = owners.doc(commentRef.id);
       final batch = db.batch();
-      final commentData = comment.toMapForCreate();
-      if (_weddingId != null && _weddingId.trim().isNotEmpty) {
-        commentData['weddingId'] = _weddingId;
-      }
-      batch.set(commentRef, commentData);
+      batch.set(
+        commentRef,
+        WeddingCommentMapper.toCreateMap(comment, weddingId: _scopedWeddingId),
+      );
       batch.set(ownerRef, {
         'commentId': commentRef.id,
         'codeHash': CommentAccessCode.digest(code),
@@ -200,6 +177,7 @@ class WeddingCommentRepository {
     }
   }
 
+  @override
   Future<CommentResult> verifyAccessCode(
     String commentId,
     String accessCode,
@@ -225,6 +203,7 @@ class WeddingCommentRepository {
     }
   }
 
+  @override
   Future<CommentResult> updateComment(
     String commentId,
     String newCommentText,
@@ -241,10 +220,8 @@ class WeddingCommentRepository {
     );
   }
 
-  Future<CommentResult> deleteComment(
-    String commentId,
-    String accessCode,
-  ) {
+  @override
+  Future<CommentResult> deleteComment(String commentId, String accessCode) {
     return _runOwnedMutation(
       commentId: commentId,
       accessCode: accessCode,
