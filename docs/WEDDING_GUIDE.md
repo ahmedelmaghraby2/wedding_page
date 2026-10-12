@@ -22,7 +22,7 @@ lib/core/config/
   config_loader.dart         Loads the config asset chosen via --dart-define
   wedding_scope.dart         InheritedWidget exposing context.wedding everywhere
 web/index.html               og: meta (title/description/image) per site
-firebase.json                hosting target per deployed site
+firebase.json                hosting entry (add a target to isolate per site)
 tool/validate_config.dart    CLI: validates config + referenced assets
 ```
 
@@ -66,6 +66,20 @@ omitted, so plain `flutter build web` keeps working unchanged.
      This overwrites `web/favicon.png` and the icons under `web/icons/` (192/512,
      maskable, apple-touch). `index.html` and `manifest.json` keep referencing
      the same filenames, so no other icon edits are needed.
+   - **Trim the payload** (recommended, keeps the bundle small):
+     - Music: re-encode to 128 kbps stereo — plenty for background playback.
+       Requires [ffmpeg](https://ffmpeg.org):
+       ```
+       ffmpeg -i song.mp3 -c:a libmp3lame -b:a 128k -ac 2 -ar 44100 -map_metadata 0 song.optimized.mp3
+       ```
+       then replace `song.mp3` with `song.optimized.mp3`.
+     - Fonts: the bundled fonts are already subset once for the whole project.
+       Re-run after installing fontTools (`python -m pip install fonttools brotli`):
+       ```
+       python tool/subset_fonts.py
+       ```
+       If a couple's copy needs a script that isn't kept yet (e.g. Cyrillic),
+       add its ranges at the top of `tool/subset_fonts.py` first.
 3. **Fill `config/wedding_<id>.json`** — every field is required. `weddingId` must
    match `assets/weddings/<id>`, and must be lowercase alphanumeric with dashes.
    `title`, `caption`, `groom`, `bride` and `developer` are bilingual and take a
@@ -86,13 +100,16 @@ omitted, so plain `flutter build web` keeps working unchanged.
    ```
    Also update the og meta in `web/index.html` (title, description, image) for the
    couple so link previews look right.
-6. **Add a hosting target** so deployments stay independent per couple:
-   - Create the site (once, admin only): `firebase hosting:sites:create wedding-<id>`
+6. **(Optional) Isolate deployment with a hosting target**
+   The current site deploys through the Firebase project's default hosting site.
+   To give a new couple an independent URL instead:
+   - Create the site once (admin only): `firebase hosting:sites:create wedding-<id>`
    - Register the target:
      ```
      firebase target:apply hosting wedding-<id> wedding-<id>
      ```
-   - Add a block to the `hosting` array in `firebase.json`:
+   - Convert the `hosting` object in `firebase.json` into an array and add a
+     block for the new couple:
      ```json
      {
        "target": "wedding-<id>",
@@ -106,22 +123,20 @@ omitted, so plain `flutter build web` keeps working unchanged.
    ```
    firebase deploy --only hosting:wedding-<id>
    ```
-   (The CLI deploys every configured target on a plain `firebase deploy`. The
-   current site uses target `wedding-ahmed-aya` → site `soltan-aya`, which is the
-   long-lived URL already shared with guests.)
 
 ---
 
 ## The current site's special case
 
-`ahmed-aya` must keep its **existing URL** (site `soltan-aya`), so:
+`ahmed-aya` keeps its **existing URL** by deploying to the **default** project
+`soltan-aya`:
 
-- `firebase.json` hosting entry pins `"target": "wedding-ahmed-aya",
-  "site": "soltan-aya"`.
-- `.firebaserc` already maps that target → `soltan-aya`.
-- Deploy with `firebase deploy --only hosting:wedding-ahmed-aya`.
+- `.firebaserc` maps `"default": "soltan-aya"` (no hosting target registered).
+- `firebase.json` has a single `hosting` object (`public: build/web`, no target).
+- Deploy with `firebase deploy --only hosting`.
 
-New couples normally get their own `wedding-<id>` site via the checklist above.
+New couples can keep using the default project or add their own `wedding-<id>`
+target via the checklist above.
 
 ---
 
@@ -130,9 +145,9 @@ New couples normally get their own `wedding-<id>` site via the checklist above.
 Comments live in Firestore (`wedding_comments`). Every comment must now carry a
 `weddingId` so one Firestore database can safely serve every couple's website.
 
-- The Flutter app scopes all reads/writes/queries to the active `weddingId`
-  (`wedding_comment_repository.dart`). No Firestore composite index is needed —
-  results are the filtered then sorted in memory.
+- The Flutter app scopes all reads/writes to the active `weddingId` through
+  `FirebaseCommentsRepository` (see `lib/features/wedding/data/`). No Firestore
+  composite index is needed — results are filtered then sorted in memory.
 - `firestore.rules` `isValidComment` now requires `weddingId` and treats it as
   immutable on edit. The `comment_owners` collection is unchanged.
 - **One-time data migration (already applied in the console for ahmed-aya):** for

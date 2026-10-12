@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:wedding/core/theme/app_colors.dart';
-import 'package:wedding/features/wedding/data/wedding_comment.dart';
+import 'package:wedding/features/wedding/domain/wedding_comment.dart';
 import 'package:wedding/l10n/generated/app_localizations.dart';
 
 class CommentItem extends StatelessWidget {
@@ -30,12 +30,10 @@ class CommentItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final text = Theme.of(context).textTheme;
-    final name = comment.fullName?.trim().isNotEmpty == true
-        ? comment.fullName!.trim()
+    final name = comment.fullName.trim().isNotEmpty
+        ? comment.fullName.trim()
         : l10n.guest;
-    final message = comment.comment?.trim().isNotEmpty == true
-        ? comment.comment!.trim()
-        : '';
+    final message = comment.comment.trim();
     final initials = _getInitials(name);
 
     return Container(
@@ -141,12 +139,9 @@ class CommentItem extends StatelessWidget {
     );
   }
 
-  String _formatTimestamp(dynamic timestamp) {
-    try {
-      final dt = timestamp.toDate() as DateTime;
-      return '${dt.day}/${dt.month}/${dt.year} ${dt.hour}:${dt.minute.toString().padLeft(2, '0')}';
-    } catch (_) {
-      return '';
-    }
+  String _formatTimestamp(DateTime dateTime) {
+    String two(int value) => value.toString().padLeft(2, '0');
+    return '${two(dateTime.day)}/${two(dateTime.month)}/${dateTime.year} '
+        '${two(dateTime.hour)}:${two(dateTime.minute)}';
   }
 }

@@ -1,28 +1,21 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:wedding/core/config/wedding_scope.dart';
-import 'package:wedding/core/failure_message.dart';
 import 'package:wedding/core/motion/reveal.dart';
-import 'package:wedding/core/music/music_controller.dart';
 import 'package:wedding/core/theme/app_colors.dart';
-import 'package:wedding/features/wedding/data/wedding_comment.dart';
-import 'package:wedding/features/wedding/data/wedding_comment_repository.dart';
+import 'package:wedding/features/wedding/application/comments_cubit.dart';
+import 'package:wedding/features/wedding/application/music_cubit.dart';
+import 'package:wedding/features/wedding/domain/wedding_comment.dart';
 import 'package:wedding/features/wedding/presentation/sections/closing_section.dart';
 import 'package:wedding/features/wedding/presentation/sections/countdown_section.dart';
 import 'package:wedding/features/wedding/presentation/sections/details_section.dart';
 import 'package:wedding/features/wedding/presentation/sections/hero_section.dart';
 import 'package:wedding/features/wedding/presentation/sections/story_section.dart';
+import 'package:wedding/features/wedding/presentation/sections/wishes_section.dart';
 import 'package:wedding/l10n/generated/app_localizations.dart';
 import 'package:wedding/widgets/comment_dialogs.dart';
-import 'package:wedding/widgets/comment_form.dart';
-import 'package:wedding/widgets/comment_item.dart';
-import 'package:wedding/widgets/empty_state.dart';
-import 'package:wedding/widgets/error_state.dart';
 import 'package:wedding/widgets/invitation_gate.dart';
-import 'package:wedding/widgets/loading_indicator.dart';
-import 'package:wedding/widgets/section.dart';
 import 'package:wedding/widgets/site_header.dart';
 
 class WeddingInvitationPage extends StatefulWidget {
@@ -33,7 +26,7 @@ class WeddingInvitationPage extends StatefulWidget {
   });
 
   final void Function(String currentLanguageCode) onToggleLocale;
-  final MusicController music;
+  final MusicCubit music;
 
   @override
   State<WeddingInvitationPage> createState() => _WeddingInvitationPageState();
@@ -41,7 +34,6 @@ class WeddingInvitationPage extends StatefulWidget {
 
 class _WeddingInvitationPageState extends State<WeddingInvitationPage>
     with SingleTickerProviderStateMixin {
-  late final WeddingCommentRepository _commentsRepository;
   final _nameController = TextEditingController();
   final _commentController = TextEditingController();
   final _accessCodeController = TextEditingController();
@@ -51,35 +43,23 @@ class _WeddingInvitationPageState extends State<WeddingInvitationPage>
   final _storyKey = GlobalKey();
   final _wishesKey = GlobalKey();
 
-  StreamSubscription<List<WeddingComment>>? _commentsSub;
-  List<WeddingComment> _comments = [];
-  bool _isLoadingComments = true;
-  CommentFailure? _commentsError;
-  bool _isSubmitting = false;
-  String? _submitMessage;
-  bool _submitSuccess = false;
-
   late final AnimationController _gateOpacity = AnimationController(
     vsync: this,
     duration: const Duration(milliseconds: 750),
     value: 1,
   );
   bool _showGate = true;
+  bool _gateOpening = false;
   bool _scrolled = false;
 
   @override
   void initState() {
     super.initState();
-    _commentsRepository = WeddingCommentRepository(
-      weddingId: WeddingScope.ofTree(context).weddingId,
-    );
-    _subscribeComments();
     _scrollController.addListener(_onScroll);
   }
 
   @override
   void dispose() {
-    _commentsSub?.cancel();
     _scrollController.dispose();
     _nameController.dispose();
     _commentController.dispose();
@@ -88,113 +68,60 @@ class _WeddingInvitationPageState extends State<WeddingInvitationPage>
     super.dispose();
   }
 
+  CommentsCubit get _comments => context.read<CommentsCubit>();
+
   void _onScroll() {
-    final scrolled = _scrollController.hasClients &&
-        _scrollController.offset > 12;
+    final scrolled =
+        _scrollController.hasClients && _scrollController.offset > 12;
     if (scrolled != _scrolled) {
       setState(() => _scrolled = scrolled);
     }
   }
 
   void _openGate() {
-    if (!_showGate) return;
+    if (!_showGate || _gateOpening) return;
+    _gateOpening = true;
     widget.music.play();
     _gateOpacity.reverse().whenComplete(() {
       if (mounted) setState(() => _showGate = false);
     });
   }
 
-  void _subscribeComments() {
-    _commentsSub?.cancel();
-    setState(() {
-      _isLoadingComments = true;
-      _commentsError = null;
-    });
-    var received = false;
-    _commentsSub = _commentsRepository.getCommentsStream().listen(
-      (comments) {
-        received = true;
-        if (!mounted) return;
-        setState(() {
-          _comments = comments;
-          _isLoadingComments = false;
-          _commentsError = null;
-        });
-      },
-      onError: (_) {
-        if (!mounted) return;
-        setState(() {
-          _isLoadingComments = false;
-          _commentsError = CommentFailure.unknown;
-        });
-      },
-      onDone: () {
-        if (!mounted || received) return;
-        setState(() {
-          _isLoadingComments = false;
-          _commentsError = CommentFailure.firebaseUnavailable;
-        });
-      },
-    );
-  }
-
   Future<void> _submitComment() async {
     if (_formKey.currentState == null || !_formKey.currentState!.validate()) {
       return;
     }
-    if (_isSubmitting) return;
-    final l10n = AppLocalizations.of(context);
-    final name = _nameController.text.trim();
-    final comment = _commentController.text.trim();
-    final code = _accessCodeController.text;
-    setState(() {
-      _isSubmitting = true;
-      _submitMessage = null;
-      _submitSuccess = false;
-    });
-    final result = await _commentsRepository.addComment(
-      WeddingComment(
-        fullName: name,
-        comment: comment,
-        avatarSeed: name.isNotEmpty ? name : 'Guest',
-      ),
-      code,
+    final cubit = _comments;
+    if (cubit.state.isSubmitting) return;
+    final result = await cubit.addComment(
+      fullName: _nameController.text,
+      comment: _commentController.text,
+      accessCode: _accessCodeController.text,
     );
     if (!mounted) return;
     if (result.isSuccess) {
-      setState(() {
-        _isSubmitting = false;
-        _submitSuccess = true;
-        _submitMessage = l10n.commentAdded;
-        _commentController.clear();
-        _nameController.clear();
-        _accessCodeController.clear();
-        _formKey.currentState?.reset();
-      });
-    } else {
-      setState(() {
-        _isSubmitting = false;
-        _submitSuccess = false;
-        _submitMessage = messageForFailure(l10n, result.failure!);
-      });
+      _commentController.clear();
+      _nameController.clear();
+      _accessCodeController.clear();
+      _formKey.currentState?.reset();
     }
   }
 
   Future<void> _editComment(WeddingComment comment) async {
     final l10n = AppLocalizations.of(context);
+    final cubit = _comments;
     final id = comment.id;
     if (id == null) return;
     final code = await showAccessCodeDialog(
       context,
       title: l10n.enterAccessCodeTitle,
-      onVerify: (value) =>
-          _commentsRepository.verifyAccessCode(id, value),
+      onVerify: (value) => cubit.verifyAccessCode(id, value),
     );
     if (code == null || !mounted) return;
     final updated = await showEditCommentDialog(
       context,
-      initialText: comment.comment ?? '',
-      onSave: (value) => _commentsRepository.updateComment(id, value, code),
+      initialText: comment.comment,
+      onSave: (value) => cubit.updateComment(id, value, code),
     );
     if (updated == null || !mounted) return;
     ScaffoldMessenger.of(
@@ -204,18 +131,18 @@ class _WeddingInvitationPageState extends State<WeddingInvitationPage>
 
   Future<void> _deleteComment(WeddingComment comment) async {
     final l10n = AppLocalizations.of(context);
+    final cubit = _comments;
     final id = comment.id;
     if (id == null) return;
     final code = await showAccessCodeDialog(
       context,
       title: l10n.enterAccessCodeTitle,
-      onVerify: (value) =>
-          _commentsRepository.verifyAccessCode(id, value),
+      onVerify: (value) => cubit.verifyAccessCode(id, value),
     );
     if (code == null || !mounted) return;
     final deleted = await showDeleteConfirmDialog(
       context,
-      onConfirm: () => _commentsRepository.deleteComment(id, code),
+      onConfirm: () => cubit.deleteComment(id, code),
     );
     if (deleted != true || !mounted) return;
     ScaffoldMessenger.of(
@@ -283,7 +210,7 @@ class _WeddingInvitationPageState extends State<WeddingInvitationPage>
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(68 + MediaQuery.of(context).padding.top),
         child: SiteHeader(
-          musicController: widget.music,
+          music: widget.music,
           onToggleLocale: () =>
               widget.onToggleLocale(AppLocalizations.of(context).localeName),
           onNavigate: (section) {
@@ -352,7 +279,15 @@ class _WeddingInvitationPageState extends State<WeddingInvitationPage>
                     sectionKey: _wishesKey,
                     maxContent: maxContent,
                     hPad: hPad,
-                    child: _buildWishes(context),
+                    child: WishesSection(
+                      formKey: _formKey,
+                      nameController: _nameController,
+                      commentController: _commentController,
+                      accessCodeController: _accessCodeController,
+                      onSubmit: _submitComment,
+                      onEdit: _editComment,
+                      onDelete: _deleteComment,
+                    ),
                   ),
                 ),
               SliverToBoxAdapter(
@@ -396,75 +331,4 @@ class _WeddingInvitationPageState extends State<WeddingInvitationPage>
     );
   }
 
-  Widget _buildWishes(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        SectionHeading(
-          eyebrow: l10n.weddingInvitation,
-          title: l10n.guestWishes,
-          subtitle: l10n.wishesSubtitle,
-        ),
-        const SizedBox(height: 36),
-        Container(
-          padding: const EdgeInsets.all(24),
-          decoration: BoxDecoration(
-            color: AppColors.cream,
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: AppColors.line),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.espresso.withValues(alpha: 0.05),
-                blurRadius: 24,
-                offset: const Offset(0, 12),
-              ),
-            ],
-          ),
-          child: CommentForm(
-            formKey: _formKey,
-            nameController: _nameController,
-            commentController: _commentController,
-            accessCodeController: _accessCodeController,
-            isSubmitting: _isSubmitting,
-            submitMessage: _submitMessage,
-            submitSuccess: _submitSuccess,
-            onSubmit: _submitComment,
-          ),
-        ),
-        const SizedBox(height: 36),
-        _buildCommentsList(context),
-      ],
-    );
-  }
-
-  Widget _buildCommentsList(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    if (_isLoadingComments) {
-      return const Center(child: LoadingIndicator());
-    }
-    if (_commentsError != null) {
-      return ErrorState(
-        message: messageForFailure(l10n, _commentsError!),
-        onRetry: _subscribeComments,
-      );
-    }
-    if (_comments.isEmpty) {
-      return const EmptyState();
-    }
-    return ListView.separated(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: _comments.length,
-      separatorBuilder: (_, _) => const SizedBox(height: 14),
-      itemBuilder: (_, i) => FadeSlideIn(
-        delay: Duration(milliseconds: (i.clamp(0, 6)) * 80),
-        child: CommentItem(
-          comment: _comments[i],
-          onEdit: () => _editComment(_comments[i]),
-          onDelete: () => _deleteComment(_comments[i]),
-        ),
-      ),
-    );
-  }
 }

@@ -2,7 +2,7 @@ import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:wedding/core/theme/app_colors.dart';
-import 'package:wedding/features/wedding/data/comment_access_code.dart';
+import 'package:wedding/features/wedding/domain/comment_access_code.dart';
 import 'package:wedding/l10n/generated/app_localizations.dart';
 
 class CommentForm extends StatefulWidget {
@@ -169,14 +169,16 @@ class _CommentFormState extends State<CommentForm> {
             },
           ),
           const SizedBox(height: 8),
-          Row(
+          OverflowBar(
+            alignment: MainAxisAlignment.spaceBetween,
+            overflowAlignment: OverflowBarAlignment.start,
+            spacing: 8,
             children: [
               TextButton.icon(
                 onPressed: widget.isSubmitting ? null : _generateAccessCode,
                 icon: const Icon(Icons.autorenew, size: 18),
                 label: Text(l10n.generateAccessCode),
               ),
-              const Spacer(),
               TextButton.icon(
                 onPressed: widget.isSubmitting ? null : _copyAccessCode,
                 icon: const Icon(Icons.copy_outlined, size: 18),

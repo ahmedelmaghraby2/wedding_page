@@ -5,6 +5,11 @@ import 'package:crypto/crypto.dart';
 
 enum AccessCodeIssue { empty, tooShort }
 
+/// Generation and validation of the private "Comment Access Code".
+///
+/// The code is the actual secret; [digest] is only a stable, comparable token
+/// used by the Firestore rules. Note the constant below is **not** a secret —
+/// it ships in the client bundle. See the security notes in the project docs.
 class CommentAccessCode {
   CommentAccessCode._();
 
@@ -17,7 +22,7 @@ class CommentAccessCode {
   static const String special = r'!@#$%^&*()-_=+[]{}?.,~';
   static const String _all = '$upper$lower$digits$special';
 
-  static const String _pepper = 'soltan-aya-comments-v1';
+  static const String _salt = 'soltan-aya-comments-v1';
 
   static String generate({Random? random}) {
     final rng = random ?? Random.secure();
@@ -50,7 +55,7 @@ class CommentAccessCode {
 
   static String digest(String rawCode) {
     final normalized = normalize(rawCode);
-    return sha256.convert(utf8.encode('$_pepper$normalized')).toString();
+    return sha256.convert(utf8.encode('$_salt$normalized')).toString();
   }
 
   static String newNonce([Random? random]) {

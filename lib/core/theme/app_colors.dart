@@ -12,16 +12,24 @@ class AppColors {
   static const Color beige = Color(0xFFEDE4D8);
 
   static const Color champagne = Color(0xFFC6A96B);
-  static const Color goldDeep = Color(0xFFA8863F);
+
+  /// Accent gold used for headings, labels and buttons. Kept dark enough to
+  /// meet WCAG AA (>= 4.5:1) as text on the ivory/cream surfaces and as a
+  /// button background under white text. See `test/a11y_test.dart`.
+  static const Color goldDeep = Color(0xFF8A6C2B);
   static const Color goldSoft = Color(0xFFD8C199);
 
   static const Color blush = Color(0xFFF3DAD6);
   static const Color blushDeep = Color(0xFFE8C4C0);
-  static const Color rose = Color(0xFFC98B8B);
+
+  /// Error/destructive accent; meets WCAG 1.4.11 (>= 3:1) as an icon on cream.
+  static const Color rose = Color(0xFFBC7A7A);
 
   static const Color espresso = Color(0xFF4A3F35);
   static const Color taupe = Color(0xFF6B5B4F);
-  static const Color taupeLight = Color(0xFF9A8B7C);
+
+  /// Muted secondary text; kept at WCAG AA (>= 4.5:1) on ivory/cream.
+  static const Color taupeLight = Color(0xFF7C6E60);
 
   static const Color line = Color(0xFFE7DED1);
 

@@ -1,10 +1,11 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:wedding/core/config/wedding_scope.dart';
-import 'package:wedding/core/music/music_controller.dart';
 import 'package:wedding/core/theme/app_colors.dart';
+import 'package:wedding/features/wedding/application/music_cubit.dart';
 import 'package:wedding/l10n/generated/app_localizations.dart';
 import 'package:wedding/widgets/music_button.dart';
 import 'package:wedding/widgets/ornaments.dart';
@@ -12,7 +13,7 @@ import 'package:wedding/widgets/ornaments.dart';
 class SiteHeader extends StatelessWidget {
   const SiteHeader({
     super.key,
-    required this.musicController,
+    required this.music,
     required this.onToggleLocale,
     required this.onNavigate,
     required this.isMobile,
@@ -20,7 +21,7 @@ class SiteHeader extends StatelessWidget {
     required this.onHome,
   });
 
-  final MusicController musicController;
+  final MusicCubit music;
   final VoidCallback onToggleLocale;
   final void Function(String section) onNavigate;
   final bool isMobile;
@@ -90,13 +91,13 @@ class SiteHeader extends StatelessWidget {
                   ),
                   const SizedBox(width: 8),
                   MusicButton(
-                    controller: musicController,
-                    tooltip: musicController.isPlaying
+                    cubit: music,
+                    tooltip: music.state.isPlaying
                         ? l10n.pauseMusic
                         : l10n.playMusic,
                   ),
                   const SizedBox(width: 8),
-                  _MuteButton(controller: musicController),
+                  _MuteButton(cubit: music),
                 ],
               ),
             ),
@@ -123,23 +124,26 @@ class SiteHeader extends StatelessWidget {
 }
 
 class _MuteButton extends StatelessWidget {
-  const _MuteButton({required this.controller});
+  const _MuteButton({required this.cubit});
 
-  final MusicController controller;
+  final MusicCubit cubit;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    return AnimatedBuilder(
-      animation: controller,
-      builder: (context, _) {
-        final muted = controller.isMuted;
-        return Tooltip(
-          message: muted ? l10n.unmuteMusic : l10n.muteMusic,
+    return BlocBuilder<MusicCubit, MusicState>(
+      bloc: cubit,
+      builder: (context, state) {
+        final muted = state.muted;
+        final label = muted ? l10n.unmuteMusic : l10n.muteMusic;
+        return Semantics(
+          button: true,
+          label: label,
           child: IconButton(
-            onPressed: controller.toggleMute,
+            onPressed: cubit.toggleMute,
             iconSize: 20,
             color: AppColors.goldDeep,
+            tooltip: label,
             icon: Icon(
               muted ? Icons.volume_off_outlined : Icons.volume_up_outlined,
             ),

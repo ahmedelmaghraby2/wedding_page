@@ -77,11 +77,14 @@ class ClosingSection extends StatelessWidget {
             children: [
               const FloralSprig(size: 20, flip: true),
               const SizedBox(width: 12),
-              Text(
-                '${l10n.footerNote} · ${wedding.developer.resolve(locale)}',
-                style: text.labelSmall?.copyWith(
-                  color: AppColors.taupeLight,
-                  letterSpacing: 2,
+              Flexible(
+                child: Text(
+                  '${l10n.footerNote} · ${wedding.developer.resolve(locale)}',
+                  textAlign: TextAlign.center,
+                  style: text.labelSmall?.copyWith(
+                    color: AppColors.taupeLight,
+                    letterSpacing: 2,
+                  ),
                 ),
               ),
               const SizedBox(width: 12),

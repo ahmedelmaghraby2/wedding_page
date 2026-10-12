@@ -1,6 +1,10 @@
-import 'package:wedding/features/wedding/data/wedding_comment_repository.dart';
+import 'package:wedding/features/wedding/domain/comment_failure.dart';
 import 'package:wedding/l10n/generated/app_localizations.dart';
 
+/// Maps a domain [CommentFailure] to a localized, user-facing message.
+///
+/// Lives in the presentation layer because it depends on `AppLocalizations`;
+/// the application/domain layers stay localization-free.
 String messageForFailure(AppLocalizations l10n, CommentFailure failure) {
   switch (failure) {
     case CommentFailure.invalidCode:
