@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wedding/core/theme/app_colors.dart';
-import 'package:wedding/features/wedding/application/music_cubit.dart';
+import 'package:wedding/features/wedding/presentation/controllers/cubits/music/music_cubit.dart';
 
 /// A compact, elegant play/pause control that reflects real playback state.
 class MusicButton extends StatelessWidget {
@@ -126,10 +126,7 @@ class _EqualizerIconState extends State<_EqualizerIcon>
       animation: _controller,
       builder: (context, _) => CustomPaint(
         size: const Size(20, 18),
-        painter: _BarsPainter(
-          progress: _controller.value,
-          color: widget.color,
-        ),
+        painter: _BarsPainter(progress: _controller.value, color: widget.color),
       ),
     );
   }

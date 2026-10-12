@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:wedding/l10n/generated/app_localizations.dart';
+import 'package:wedding/core/l10n/generated/app_localizations.dart';
 
 void main() {
-  testWidgets('English locale resolves to LTR English strings', (
-    tester,
-  ) async {
+  testWidgets('English locale resolves to LTR English strings', (tester) async {
     late AppLocalizations l10n;
     late TextDirection direction;
     await tester.pumpWidget(

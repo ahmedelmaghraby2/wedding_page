@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:wedding/core/music/music_controller.dart';
-import 'package:wedding/features/wedding/application/music_cubit.dart';
-import 'package:wedding/widgets/music_button.dart';
+import 'package:wedding/features/wedding/presentation/controllers/cubits/music/music_cubit.dart';
+import 'package:wedding/features/wedding/presentation/ui/widgets/music_button.dart';
 
 void main() {
   group('MusicCubit mirrors its single MusicController', () {

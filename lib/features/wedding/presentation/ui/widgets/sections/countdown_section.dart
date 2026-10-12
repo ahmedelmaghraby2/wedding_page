@@ -6,8 +6,8 @@ import 'package:wedding/core/config/wedding_scope.dart';
 import 'package:wedding/core/motion/reveal.dart';
 import 'package:wedding/core/theme/app_colors.dart';
 import 'package:wedding/features/wedding/domain/countdown.dart';
-import 'package:wedding/l10n/generated/app_localizations.dart';
-import 'package:wedding/widgets/section.dart';
+import 'package:wedding/core/l10n/generated/app_localizations.dart';
+import 'package:wedding/features/wedding/presentation/ui/widgets/section.dart';
 
 class CountdownSection extends StatefulWidget {
   const CountdownSection({super.key, required this.isMobile});
@@ -26,7 +26,8 @@ class _CountdownSectionState extends State<CountdownSection> {
   @override
   void initState() {
     super.initState();
-    _instant = WeddingScope.ofTree(context).event.countdownDateTime ??
+    _instant =
+        WeddingScope.ofTree(context).event.countdownDateTime ??
         DateTime.now().toUtc();
     _remaining = timeUntil(_instant);
     if (_remaining > Duration.zero) {
@@ -62,9 +63,8 @@ class _CountdownSectionState extends State<CountdownSection> {
         if (passed)
           Text(
             l10n.countdownToday,
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              color: AppColors.goldDeep,
-            ),
+            style: Theme.of(context).textTheme.headlineSmall
+                ?.copyWith(color: AppColors.goldDeep),
             textAlign: TextAlign.center,
           )
         else

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:wedding/core/theme/app_colors.dart';
-import 'package:wedding/l10n/generated/app_localizations.dart';
+import 'package:wedding/core/l10n/generated/app_localizations.dart';
 
 class ErrorState extends StatelessWidget {
   final String message;
@@ -16,17 +16,12 @@ class ErrorState extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(
-            Icons.error_outline,
-            size: 44,
-            color: AppColors.rose,
-          ),
+          const Icon(Icons.error_outline, size: 44, color: AppColors.rose),
           const SizedBox(height: 16),
           Text(
             message,
-            style: Theme.of(
-              context,
-            ).textTheme.bodyMedium?.copyWith(color: AppColors.taupe),
+            style: Theme.of(context).textTheme.bodyMedium
+                ?.copyWith(color: AppColors.taupe),
             textAlign: TextAlign.center,
           ),
           if (onRetry != null) ...[

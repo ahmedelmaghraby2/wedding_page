@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 import 'package:wedding/core/config/wedding_scope.dart';
 import 'package:wedding/core/theme/app_colors.dart';
-import 'package:wedding/l10n/generated/app_localizations.dart';
-import 'package:wedding/widgets/section.dart';
+import 'package:wedding/core/l10n/generated/app_localizations.dart';
+import 'package:wedding/features/wedding/presentation/ui/widgets/section.dart';
 
 class DetailsSection extends StatelessWidget {
   const DetailsSection({

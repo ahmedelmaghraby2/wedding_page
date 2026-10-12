@@ -1,5 +1,5 @@
 import 'package:flutter/widgets.dart';
-import 'package:wedding/l10n/generated/app_localizations.dart';
+import 'package:wedding/core/l10n/generated/app_localizations.dart';
 
 import 'wedding_config.dart';
 

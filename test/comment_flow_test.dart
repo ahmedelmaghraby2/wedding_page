@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:wedding/features/wedding/application/comments_cubit.dart';
+import 'package:wedding/features/wedding/presentation/controllers/cubits/comments/comments_cubit.dart';
 import 'package:wedding/features/wedding/domain/wedding_comment.dart';
-import 'package:wedding/features/wedding/presentation/sections/wishes_section.dart';
-import 'package:wedding/l10n/generated/app_localizations.dart';
-import 'package:wedding/widgets/comment_item.dart';
-import 'package:wedding/widgets/empty_state.dart';
+import 'package:wedding/features/wedding/presentation/ui/widgets/sections/wishes_section.dart';
+import 'package:wedding/core/l10n/generated/app_localizations.dart';
+import 'package:wedding/features/wedding/presentation/ui/widgets/comment_item.dart';
+import 'package:wedding/core/presentation/widgets/empty_state.dart';
 
 import 'support/fake_comments_repository.dart';
 

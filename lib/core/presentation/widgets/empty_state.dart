@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:wedding/core/theme/app_colors.dart';
-import 'package:wedding/l10n/generated/app_localizations.dart';
+import 'package:wedding/core/l10n/generated/app_localizations.dart';
 
 class EmptyState extends StatelessWidget {
   const EmptyState({super.key});
@@ -21,9 +21,8 @@ class EmptyState extends StatelessWidget {
           const SizedBox(height: 14),
           Text(
             AppLocalizations.of(context).noComments,
-            style: Theme.of(
-              context,
-            ).textTheme.bodyMedium?.copyWith(color: AppColors.taupe),
+            style: Theme.of(context).textTheme.bodyMedium
+                ?.copyWith(color: AppColors.taupe),
             textAlign: TextAlign.center,
           ),
         ],

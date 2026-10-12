@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:wedding/core/config/wedding_config.dart';
 import 'package:wedding/core/config/wedding_scope.dart';
-import 'package:wedding/features/wedding/presentation/sections/closing_section.dart';
-import 'package:wedding/l10n/generated/app_localizations.dart';
-import 'package:wedding/widgets/invitation_gate.dart';
+import 'package:wedding/features/wedding/presentation/ui/widgets/sections/closing_section.dart';
+import 'package:wedding/core/l10n/generated/app_localizations.dart';
+import 'package:wedding/features/wedding/presentation/ui/widgets/invitation_gate.dart';
 
 /// A config with distinct English and Arabic names so rendering can be
 /// asserted per locale.

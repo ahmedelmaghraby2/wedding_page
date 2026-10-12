@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:wedding/l10n/generated/app_localizations.dart';
-import 'package:wedding/widgets/comment_form.dart';
+import 'package:wedding/core/l10n/generated/app_localizations.dart';
+import 'package:wedding/features/wedding/presentation/ui/widgets/comment_form.dart';
 
 void main() {
   late GlobalKey<FormState> formKey;
@@ -81,7 +81,10 @@ void main() {
     await tester.enterText(find.byType(TextFormField).at(2), 'abc');
     await tapSend(tester);
 
-    expect(find.text('Full name must be at least 2 characters'), findsOneWidget);
+    expect(
+      find.text('Full name must be at least 2 characters'),
+      findsOneWidget,
+    );
     expect(
       find.text('Access code must be at least 8 characters'),
       findsOneWidget,
@@ -104,7 +107,10 @@ void main() {
     await pumpForm(tester);
 
     await tester.enterText(find.byType(TextFormField).at(0), 'Jane Doe');
-    await tester.enterText(find.byType(TextFormField).at(1), 'Congratulations!');
+    await tester.enterText(
+      find.byType(TextFormField).at(1),
+      'Congratulations!',
+    );
     await tester.enterText(find.byType(TextFormField).at(2), 'A7m#K2p!');
     await tapSend(tester);
 

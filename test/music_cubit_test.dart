@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:wedding/core/music/music_controller.dart';
-import 'package:wedding/features/wedding/application/music_cubit.dart';
+import 'package:wedding/features/wedding/presentation/controllers/cubits/music/music_cubit.dart';
 
 void main() {
   test('reflects the controller state on creation', () {

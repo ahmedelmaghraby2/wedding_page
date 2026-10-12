@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:wedding/features/wedding/domain/wedding_comment.dart';
-import 'package:wedding/l10n/generated/app_localizations.dart';
-import 'package:wedding/widgets/comment_item.dart';
+import 'package:wedding/core/l10n/generated/app_localizations.dart';
+import 'package:wedding/features/wedding/presentation/ui/widgets/comment_item.dart';
 
 Future<void> pumpItem(WidgetTester tester, Widget item) async {
   await tester.binding.setSurfaceSize(const Size(700, 500));
@@ -48,9 +48,7 @@ void main() {
     expect(find.text('Guest'), findsOneWidget);
   });
 
-  testWidgets('exposes edit and delete through the popup menu', (
-    tester,
-  ) async {
+  testWidgets('exposes edit and delete through the popup menu', (tester) async {
     var edited = false;
     var deleted = false;
 

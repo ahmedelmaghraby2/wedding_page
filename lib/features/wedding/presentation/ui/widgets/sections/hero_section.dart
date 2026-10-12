@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:wedding/core/config/wedding_scope.dart';
 import 'package:wedding/core/motion/reveal.dart';
 import 'package:wedding/core/theme/app_colors.dart';
-import 'package:wedding/l10n/generated/app_localizations.dart';
-import 'package:wedding/widgets/ornaments.dart';
+import 'package:wedding/core/l10n/generated/app_localizations.dart';
+import 'package:wedding/features/wedding/presentation/ui/widgets/ornaments.dart';
 
 class HeroSection extends StatelessWidget {
   const HeroSection({super.key, required this.isMobile, required this.height});
