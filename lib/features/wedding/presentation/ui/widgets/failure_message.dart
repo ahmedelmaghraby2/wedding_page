@@ -1,5 +1,5 @@
 import 'package:wedding/features/wedding/domain/comment_failure.dart';
-import 'package:wedding/l10n/generated/app_localizations.dart';
+import 'package:wedding/core/l10n/generated/app_localizations.dart';
 
 /// Maps a domain [CommentFailure] to a localized, user-facing message.
 ///

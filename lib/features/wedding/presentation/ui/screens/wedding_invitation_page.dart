@@ -4,19 +4,19 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:wedding/core/config/wedding_scope.dart';
 import 'package:wedding/core/motion/reveal.dart';
 import 'package:wedding/core/theme/app_colors.dart';
-import 'package:wedding/features/wedding/application/comments_cubit.dart';
-import 'package:wedding/features/wedding/application/music_cubit.dart';
+import 'package:wedding/features/wedding/presentation/controllers/cubits/comments/comments_cubit.dart';
+import 'package:wedding/features/wedding/presentation/controllers/cubits/music/music_cubit.dart';
 import 'package:wedding/features/wedding/domain/wedding_comment.dart';
-import 'package:wedding/features/wedding/presentation/sections/closing_section.dart';
-import 'package:wedding/features/wedding/presentation/sections/countdown_section.dart';
-import 'package:wedding/features/wedding/presentation/sections/details_section.dart';
-import 'package:wedding/features/wedding/presentation/sections/hero_section.dart';
-import 'package:wedding/features/wedding/presentation/sections/story_section.dart';
-import 'package:wedding/features/wedding/presentation/sections/wishes_section.dart';
-import 'package:wedding/l10n/generated/app_localizations.dart';
-import 'package:wedding/widgets/comment_dialogs.dart';
-import 'package:wedding/widgets/invitation_gate.dart';
-import 'package:wedding/widgets/site_header.dart';
+import 'package:wedding/features/wedding/presentation/ui/widgets/sections/closing_section.dart';
+import 'package:wedding/features/wedding/presentation/ui/widgets/sections/countdown_section.dart';
+import 'package:wedding/features/wedding/presentation/ui/widgets/sections/details_section.dart';
+import 'package:wedding/features/wedding/presentation/ui/widgets/sections/hero_section.dart';
+import 'package:wedding/features/wedding/presentation/ui/widgets/sections/story_section.dart';
+import 'package:wedding/features/wedding/presentation/ui/widgets/sections/wishes_section.dart';
+import 'package:wedding/core/l10n/generated/app_localizations.dart';
+import 'package:wedding/features/wedding/presentation/ui/widgets/comment_dialogs.dart';
+import 'package:wedding/features/wedding/presentation/ui/widgets/invitation_gate.dart';
+import 'package:wedding/features/wedding/presentation/ui/widgets/site_header.dart';
 
 class WeddingInvitationPage extends StatefulWidget {
   const WeddingInvitationPage({
@@ -124,9 +124,8 @@ class _WeddingInvitationPageState extends State<WeddingInvitationPage>
       onSave: (value) => cubit.updateComment(id, value, code),
     );
     if (updated == null || !mounted) return;
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(l10n.commentUpdated)));
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(l10n.commentUpdated)));
   }
 
   Future<void> _deleteComment(WeddingComment comment) async {
@@ -145,9 +144,8 @@ class _WeddingInvitationPageState extends State<WeddingInvitationPage>
       onConfirm: () => cubit.deleteComment(id, code),
     );
     if (deleted != true || !mounted) return;
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(l10n.commentDeleted)));
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(l10n.commentDeleted)));
   }
 
   Future<void> _openGoogleMaps() async {
@@ -158,15 +156,13 @@ class _WeddingInvitationPageState extends State<WeddingInvitationPage>
       if (await canLaunchUrl(uri)) {
         await launchUrl(uri, mode: LaunchMode.externalApplication);
       } else if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(l10n.mapsOpenFailed)));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(l10n.mapsOpenFailed)));
       }
     } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(l10n.mapsOpenFailed)));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(l10n.mapsOpenFailed)));
       }
     }
   }
@@ -290,9 +286,7 @@ class _WeddingInvitationPageState extends State<WeddingInvitationPage>
                     ),
                   ),
                 ),
-              SliverToBoxAdapter(
-                child: ClosingSection(isMobile: isMobile),
-              ),
+              SliverToBoxAdapter(child: ClosingSection(isMobile: isMobile)),
             ],
           ),
           if (_showGate)
@@ -330,5 +324,4 @@ class _WeddingInvitationPageState extends State<WeddingInvitationPage>
       ),
     );
   }
-
 }

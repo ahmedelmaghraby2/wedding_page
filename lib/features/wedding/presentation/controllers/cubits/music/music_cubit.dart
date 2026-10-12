@@ -1,18 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wedding/core/music/music_controller.dart';
+import 'package:wedding/features/wedding/presentation/controllers/cubits/music/music_state.dart';
 
-/// Immutable view state for the background-music controls.
-class MusicState {
-  const MusicState({required this.status, required this.muted, this.errorMessage});
-
-  final MusicStatus status;
-  final bool muted;
-  final String? errorMessage;
-
-  bool get isPlaying => status == MusicStatus.playing;
-  bool get isLoading => status == MusicStatus.loading;
-  bool get hasError => status == MusicStatus.error;
-}
+export 'package:wedding/features/wedding/presentation/controllers/cubits/music/music_state.dart';
 
 /// Exposes the app-wide [MusicController] as Bloc state so controls are
 /// declarative and testable. It owns the controller's lifetime: [close] disposes

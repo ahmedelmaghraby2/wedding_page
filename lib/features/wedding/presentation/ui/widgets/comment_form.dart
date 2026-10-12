@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:wedding/core/theme/app_colors.dart';
 import 'package:wedding/features/wedding/domain/comment_access_code.dart';
-import 'package:wedding/l10n/generated/app_localizations.dart';
+import 'package:wedding/core/l10n/generated/app_localizations.dart';
 
 class CommentForm extends StatefulWidget {
   final GlobalKey<FormState> formKey;
@@ -64,9 +64,8 @@ class _CommentFormState extends State<CommentForm> {
     }
     await Clipboard.setData(ClipboardData(text: code));
     if (!mounted) return;
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(l10n.copiedToClipboard)));
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(l10n.copiedToClipboard)));
   }
 
   @override
@@ -189,9 +188,8 @@ class _CommentFormState extends State<CommentForm> {
           const SizedBox(height: 8),
           Text(
             l10n.accessCodeInfoBody,
-            style: Theme.of(
-              context,
-            ).textTheme.bodySmall?.copyWith(color: Colors.grey[700]),
+            style: Theme.of(context).textTheme.bodySmall
+                ?.copyWith(color: Colors.grey[700]),
           ),
           const SizedBox(height: 16),
           FilledButton(

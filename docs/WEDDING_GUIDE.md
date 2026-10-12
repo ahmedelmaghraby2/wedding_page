@@ -166,7 +166,7 @@ Comments live in Firestore (`wedding_comments`). Every comment must now carry a
 
 ## Conventions & gotchas
 
-- **Do not** add wedding-specific text to `lib/l10n/app_en.arb`/`app_ar.arb`.
+- **Do not** add wedding-specific text to `lib/core/l10n/app_en.arb`/`app_ar.arb`.
   All per-couple copy lives in the config's `title`, `caption`, `story`,
   `event.display.*`. The ARB files only hold UI chrome ("Wedding Details", "Open
   Invitation", ...).

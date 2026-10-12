@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:wedding/core/theme/app_colors.dart';
-import 'package:wedding/l10n/generated/app_localizations.dart';
+import 'package:wedding/core/l10n/generated/app_localizations.dart';
 
 class LoadingIndicator extends StatelessWidget {
   const LoadingIndicator({super.key});
@@ -24,13 +24,11 @@ class LoadingIndicator extends StatelessWidget {
           const SizedBox(height: 16),
           Text(
             AppLocalizations.of(context).loadingWishes,
-            style: Theme.of(
-              context,
-            ).textTheme.bodyMedium?.copyWith(color: AppColors.taupe),
+            style: Theme.of(context).textTheme.bodyMedium
+                ?.copyWith(color: AppColors.taupe),
           ),
         ],
       ),
     );
   }
 }
-

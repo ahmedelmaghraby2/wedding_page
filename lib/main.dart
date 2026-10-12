@@ -9,13 +9,13 @@ import 'package:wedding/core/config/wedding_config.dart';
 import 'package:wedding/core/config/wedding_scope.dart';
 import 'package:wedding/core/music/music_controller.dart';
 import 'package:wedding/core/theme/app_theme.dart';
-import 'package:wedding/features/wedding/application/comments_cubit.dart';
-import 'package:wedding/features/wedding/application/music_cubit.dart';
+import 'package:wedding/features/wedding/presentation/controllers/cubits/comments/comments_cubit.dart';
+import 'package:wedding/features/wedding/presentation/controllers/cubits/music/music_cubit.dart';
 import 'package:wedding/features/wedding/data/firebase_comments_repository.dart';
 import 'package:wedding/features/wedding/domain/comments_repository.dart';
-import 'package:wedding/features/wedding/presentation/wedding_invitation_page.dart';
+import 'package:wedding/features/wedding/presentation/ui/screens/wedding_invitation_page.dart';
 import 'package:wedding/firebase_options.dart';
-import 'package:wedding/l10n/generated/app_localizations.dart';
+import 'package:wedding/core/l10n/generated/app_localizations.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

@@ -3,10 +3,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:wedding/core/config/wedding_config.dart';
 import 'package:wedding/core/config/wedding_scope.dart';
 import 'package:wedding/core/music/music_controller.dart';
-import 'package:wedding/features/wedding/application/music_cubit.dart';
-import 'package:wedding/l10n/generated/app_localizations.dart';
-import 'package:wedding/widgets/music_button.dart';
-import 'package:wedding/widgets/site_header.dart';
+import 'package:wedding/features/wedding/presentation/controllers/cubits/music/music_cubit.dart';
+import 'package:wedding/core/l10n/generated/app_localizations.dart';
+import 'package:wedding/features/wedding/presentation/ui/widgets/music_button.dart';
+import 'package:wedding/features/wedding/presentation/ui/widgets/site_header.dart';
 
 WeddingConfig _config({bool story = true, bool comments = true}) {
   return WeddingConfig.fromJson({
@@ -28,9 +28,10 @@ WeddingConfig _config({bool story = true, bool comments = true}) {
     'heroImage': 'assets/weddings/test-couple/hero.jpg',
     'musicSource': 'assets/weddings/test-couple/song.mp3',
     'caption': {'en': 'Welcome', 'ar': 'أهلاً'},
-    if (story) 'story': {
-      'en': ['Once upon a time'],
-    },
+    if (story)
+      'story': {
+        'en': ['Once upon a time'],
+      },
     'showComments': comments,
   });
 }

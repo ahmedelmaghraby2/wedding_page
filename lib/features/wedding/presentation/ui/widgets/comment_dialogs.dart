@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:wedding/features/wedding/domain/comment_access_code.dart';
 import 'package:wedding/features/wedding/domain/comment_failure.dart';
-import 'package:wedding/features/wedding/presentation/failure_message.dart';
-import 'package:wedding/l10n/generated/app_localizations.dart';
+import 'package:wedding/features/wedding/presentation/ui/widgets/failure_message.dart';
+import 'package:wedding/core/l10n/generated/app_localizations.dart';
 
 Future<String?> showAccessCodeDialog(
   BuildContext context, {
@@ -87,7 +87,9 @@ class _AccessCodeDialogState extends State<_AccessCodeDialog> {
               prefixIcon: const Icon(Icons.lock_outline),
               suffixIcon: IconButton(
                 icon: Icon(
-                  _obscure ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                  _obscure
+                      ? Icons.visibility_outlined
+                      : Icons.visibility_off_outlined,
                 ),
                 tooltip: l10n.accessCodeLabel,
                 onPressed: _isVerifying
@@ -133,10 +135,8 @@ Future<String?> showEditCommentDialog(
   return showDialog<String>(
     context: context,
     barrierDismissible: false,
-    builder: (_) => _EditCommentDialog(
-      initialText: initialText,
-      onSave: onSave,
-    ),
+    builder: (_) =>
+        _EditCommentDialog(initialText: initialText, onSave: onSave),
   );
 }
 
@@ -151,8 +151,9 @@ class _EditCommentDialog extends StatefulWidget {
 }
 
 class _EditCommentDialogState extends State<_EditCommentDialog> {
-  late final TextEditingController _controller =
-      TextEditingController(text: widget.initialText);
+  late final TextEditingController _controller = TextEditingController(
+    text: widget.initialText,
+  );
   bool _isSaving = false;
   String? _error;
 
@@ -299,7 +300,9 @@ class _DeleteConfirmDialogState extends State<_DeleteConfirmDialog> {
       ),
       actions: [
         TextButton(
-          onPressed: _isDeleting ? null : () => Navigator.of(context).pop(false),
+          onPressed: _isDeleting
+              ? null
+              : () => Navigator.of(context).pop(false),
           child: Text(l10n.cancel),
         ),
         FilledButton(

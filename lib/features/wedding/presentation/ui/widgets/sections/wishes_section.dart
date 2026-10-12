@@ -3,16 +3,16 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:wedding/core/motion/reveal.dart';
 import 'package:wedding/core/theme/app_colors.dart';
-import 'package:wedding/features/wedding/application/comments_cubit.dart';
+import 'package:wedding/features/wedding/presentation/controllers/cubits/comments/comments_cubit.dart';
 import 'package:wedding/features/wedding/domain/wedding_comment.dart';
-import 'package:wedding/features/wedding/presentation/failure_message.dart';
-import 'package:wedding/l10n/generated/app_localizations.dart';
-import 'package:wedding/widgets/comment_form.dart';
-import 'package:wedding/widgets/comment_item.dart';
-import 'package:wedding/widgets/empty_state.dart';
-import 'package:wedding/widgets/error_state.dart';
-import 'package:wedding/widgets/loading_indicator.dart';
-import 'package:wedding/widgets/section.dart';
+import 'package:wedding/features/wedding/presentation/ui/widgets/failure_message.dart';
+import 'package:wedding/core/l10n/generated/app_localizations.dart';
+import 'package:wedding/features/wedding/presentation/ui/widgets/comment_form.dart';
+import 'package:wedding/features/wedding/presentation/ui/widgets/comment_item.dart';
+import 'package:wedding/core/presentation/widgets/empty_state.dart';
+import 'package:wedding/core/presentation/widgets/error_state.dart';
+import 'package:wedding/core/presentation/widgets/loading_indicator.dart';
+import 'package:wedding/features/wedding/presentation/ui/widgets/section.dart';
 
 /// The guest-wishes section: heading, submission form and the live comment
 /// list with its loading / empty / error / loaded states.

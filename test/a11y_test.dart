@@ -7,17 +7,17 @@ import 'package:wedding/core/config/wedding_config.dart';
 import 'package:wedding/core/config/wedding_scope.dart';
 import 'package:wedding/core/music/music_controller.dart';
 import 'package:wedding/core/theme/app_colors.dart';
-import 'package:wedding/features/wedding/application/comments_cubit.dart';
-import 'package:wedding/features/wedding/application/music_cubit.dart';
+import 'package:wedding/features/wedding/presentation/controllers/cubits/comments/comments_cubit.dart';
+import 'package:wedding/features/wedding/presentation/controllers/cubits/music/music_cubit.dart';
 import 'package:wedding/features/wedding/domain/wedding_comment.dart';
-import 'package:wedding/features/wedding/presentation/sections/closing_section.dart';
-import 'package:wedding/features/wedding/presentation/sections/wishes_section.dart';
-import 'package:wedding/l10n/generated/app_localizations.dart';
-import 'package:wedding/widgets/comment_form.dart';
-import 'package:wedding/widgets/comment_item.dart';
-import 'package:wedding/widgets/invitation_gate.dart';
-import 'package:wedding/widgets/music_button.dart';
-import 'package:wedding/widgets/site_header.dart';
+import 'package:wedding/features/wedding/presentation/ui/widgets/sections/closing_section.dart';
+import 'package:wedding/features/wedding/presentation/ui/widgets/sections/wishes_section.dart';
+import 'package:wedding/core/l10n/generated/app_localizations.dart';
+import 'package:wedding/features/wedding/presentation/ui/widgets/comment_form.dart';
+import 'package:wedding/features/wedding/presentation/ui/widgets/comment_item.dart';
+import 'package:wedding/features/wedding/presentation/ui/widgets/invitation_gate.dart';
+import 'package:wedding/features/wedding/presentation/ui/widgets/music_button.dart';
+import 'package:wedding/features/wedding/presentation/ui/widgets/site_header.dart';
 
 import 'support/fake_comments_repository.dart';
 
@@ -58,9 +58,8 @@ Future<void> _pump(
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       builder: (context, widget) => MediaQuery(
-        data: MediaQuery.of(
-          context,
-        ).copyWith(textScaler: TextScaler.linear(textScale)),
+        data: MediaQuery.of(context)
+            .copyWith(textScaler: TextScaler.linear(textScale)),
         child: widget!,
       ),
       home: Scaffold(body: child),
@@ -104,9 +103,8 @@ Future<void> _pumpScoped(
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       builder: (context, widget) => MediaQuery(
-        data: MediaQuery.of(
-          context,
-        ).copyWith(textScaler: TextScaler.linear(textScale)),
+        data: MediaQuery.of(context)
+            .copyWith(textScaler: TextScaler.linear(textScale)),
         child: widget!,
       ),
       home: WeddingScope(

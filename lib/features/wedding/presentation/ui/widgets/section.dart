@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:wedding/core/theme/app_colors.dart';
-import 'package:wedding/widgets/ornaments.dart';
+import 'package:wedding/features/wedding/presentation/ui/widgets/ornaments.dart';
 
 /// A centred section heading with a small eyebrow, sprigs and a gold rule.
 class SectionHeading extends StatelessWidget {

@@ -4,57 +4,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wedding/features/wedding/domain/comment_failure.dart';
 import 'package:wedding/features/wedding/domain/comments_repository.dart';
 import 'package:wedding/features/wedding/domain/wedding_comment.dart';
+import 'package:wedding/features/wedding/presentation/controllers/cubits/comments/comments_state.dart';
 
-/// Sentinel used by [CommentsState.copyWith] to distinguish "leave unchanged"
-/// from "set to null" for nullable fields.
-const Object _unset = Object();
-
-/// Immutable UI state for the guest-wishes section.
-class CommentsState {
-  const CommentsState({
-    this.comments = const [],
-    this.isLoading = true,
-    this.loadFailure,
-    this.isSubmitting = false,
-    this.submitResult,
-  });
-
-  final List<WeddingComment> comments;
-
-  /// The initial/live load is in flight.
-  final bool isLoading;
-
-  /// Non-null when the comment list could not be loaded.
-  final CommentFailure? loadFailure;
-
-  /// A create request is in flight (guards duplicate submissions).
-  final bool isSubmitting;
-
-  /// Result of the most recent create request, for the form to render.
-  final CommentResult? submitResult;
-
-  bool get hasLoadFailure => loadFailure != null;
-
-  CommentsState copyWith({
-    List<WeddingComment>? comments,
-    bool? isLoading,
-    Object? loadFailure = _unset,
-    bool? isSubmitting,
-    Object? submitResult = _unset,
-  }) {
-    return CommentsState(
-      comments: comments ?? this.comments,
-      isLoading: isLoading ?? this.isLoading,
-      loadFailure: identical(loadFailure, _unset)
-          ? this.loadFailure
-          : loadFailure as CommentFailure?,
-      isSubmitting: isSubmitting ?? this.isSubmitting,
-      submitResult: identical(submitResult, _unset)
-          ? this.submitResult
-          : submitResult as CommentResult?,
-    );
-  }
-}
+export 'package:wedding/features/wedding/presentation/controllers/cubits/comments/comments_state.dart';
 
 /// Owns all guest-comment business logic and exposes it as testable state.
 ///
@@ -99,10 +51,7 @@ class CommentsCubit extends Cubit<CommentsState> {
       onError: (Object _) {
         if (generation != _generation || isClosed) return;
         emit(
-          state.copyWith(
-            isLoading: false,
-            loadFailure: CommentFailure.unknown,
-          ),
+          state.copyWith(isLoading: false, loadFailure: CommentFailure.unknown),
         );
       },
       onDone: () {
@@ -127,18 +76,10 @@ class CommentsCubit extends Cubit<CommentsState> {
     if (state.isSubmitting) {
       return const CommentResult.failure(CommentFailure.conflict);
     }
-    emit(
-      state.copyWith(
-        isSubmitting: true,
-        submitResult: null,
-      ),
-    );
+    emit(state.copyWith(isSubmitting: true, submitResult: null));
     final trimmedName = fullName.trim();
     final result = await _repository.addComment(
-      WeddingComment(
-        fullName: trimmedName,
-        comment: comment.trim(),
-      ),
+      WeddingComment(fullName: trimmedName, comment: comment.trim()),
       accessCode,
     );
     if (isClosed) return result;
@@ -146,10 +87,8 @@ class CommentsCubit extends Cubit<CommentsState> {
     return result;
   }
 
-  Future<CommentResult> verifyAccessCode(
-    String commentId,
-    String accessCode,
-  ) => _repository.verifyAccessCode(commentId, accessCode);
+  Future<CommentResult> verifyAccessCode(String commentId, String accessCode) =>
+      _repository.verifyAccessCode(commentId, accessCode);
 
   Future<CommentResult> updateComment(
     String commentId,
@@ -157,8 +96,6 @@ class CommentsCubit extends Cubit<CommentsState> {
     String accessCode,
   ) => _repository.updateComment(commentId, newText, accessCode);
 
-  Future<CommentResult> deleteComment(
-    String commentId,
-    String accessCode,
-  ) => _repository.deleteComment(commentId, accessCode);
+  Future<CommentResult> deleteComment(String commentId, String accessCode) =>
+      _repository.deleteComment(commentId, accessCode);
 }

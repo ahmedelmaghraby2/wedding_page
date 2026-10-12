@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:wedding/features/wedding/application/comments_cubit.dart';
+import 'package:wedding/features/wedding/presentation/controllers/cubits/comments/comments_cubit.dart';
 import 'package:wedding/features/wedding/domain/comment_failure.dart';
 import 'package:wedding/features/wedding/domain/wedding_comment.dart';
 

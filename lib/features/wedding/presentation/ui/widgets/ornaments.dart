@@ -17,9 +17,7 @@ class GoldDivider extends StatelessWidget {
     return SizedBox(
       width: width,
       height: 18,
-      child: CustomPaint(
-        painter: _GoldDividerPainter(thickness: thickness),
-      ),
+      child: CustomPaint(painter: _GoldDividerPainter(thickness: thickness)),
     );
   }
 }
@@ -54,10 +52,7 @@ class _GoldDividerPainter extends CustomPainter {
       ..lineTo(center.dx, center.dy + 7)
       ..lineTo(center.dx - 7, center.dy)
       ..close();
-    canvas.drawPath(
-      diamond,
-      Paint()..color = AppColors.goldDeep,
-    );
+    canvas.drawPath(diamond, Paint()..color = AppColors.goldDeep);
 
     final petal = Paint()
       ..color = AppColors.rose.withValues(alpha: 0.7)
@@ -134,11 +129,7 @@ class _SprigPainter extends CustomPainter {
       canvas.translate(p.dx, p.dy);
       canvas.rotate(side * -0.7);
       canvas.drawOval(
-        Rect.fromCenter(
-          center: Offset(6 * side, 0),
-          width: 16,
-          height: 8,
-        ),
+        Rect.fromCenter(center: Offset(6 * side, 0), width: 16, height: 8),
         leaf,
       );
       canvas.restore();
@@ -180,10 +171,7 @@ class MonogramBadge extends StatelessWidget {
       child: Stack(
         alignment: Alignment.center,
         children: [
-          CustomPaint(
-            size: Size.square(size),
-            painter: _RingPainter(ring),
-          ),
+          CustomPaint(size: Size.square(size), painter: _RingPainter(ring)),
           Text(
             label,
             style: TextStyle(
@@ -335,7 +323,8 @@ class _PetalPainter extends CustomPainter {
     for (final p in petals) {
       final progress = (t * p.speed + p.sway) % 1.0;
       final y = progress * (size.height + 60) - 30;
-      final x = p.x * size.width +
+      final x =
+          p.x * size.width +
           math.sin(t * math.pi * 2 + p.sway) * p.swayAmount * size.width;
       final paint = Paint()..color = p.color;
       canvas.save();
