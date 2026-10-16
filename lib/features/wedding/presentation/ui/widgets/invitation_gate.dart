@@ -51,48 +51,58 @@ class InvitationGate extends StatelessWidget {
           ),
         );
       },
-      child: Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 32),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              MonogramBadge(size: 84, label: wedding.monogramLabel),
-              const SizedBox(height: 28),
-              Text(
-                l10n.gateEyebrow,
-                textAlign: TextAlign.center,
-                style: text.labelLarge,
-              ),
-              const SizedBox(height: 18),
-              Text(
-                wedding.groom.resolve(locale),
-                style: (isMobile ? text.displayMedium : text.displayLarge)
-                    ?.copyWith(color: AppColors.espresso),
-              ),
-              Text(
-                '&',
-                style: TextStyle(
-                  fontFamily: 'GreatVibes',
-                  fontSize: isMobile ? 40 : 56,
-                  height: 1,
-                  color: AppColors.goldDeep,
+      child: LayoutBuilder(
+        builder: (context, constraints) => SingleChildScrollView(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minHeight: constraints.maxHeight),
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 32,
+                  vertical: 24,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    MonogramBadge(size: 84, label: wedding.monogramLabel),
+                    const SizedBox(height: 28),
+                    Text(
+                      l10n.gateEyebrow,
+                      textAlign: TextAlign.center,
+                      style: text.labelLarge,
+                    ),
+                    const SizedBox(height: 18),
+                    Text(
+                      wedding.groom.resolve(locale),
+                      style: (isMobile ? text.displayMedium : text.displayLarge)
+                          ?.copyWith(color: AppColors.espresso),
+                    ),
+                    Text(
+                      '&',
+                      style: TextStyle(
+                        fontFamily: 'GreatVibes',
+                        fontSize: isMobile ? 40 : 56,
+                        height: 1,
+                        color: AppColors.goldDeep,
+                      ),
+                    ),
+                    Text(
+                      wedding.bride.resolve(locale),
+                      style: (isMobile ? text.displayMedium : text.displayLarge)
+                          ?.copyWith(color: AppColors.espresso),
+                    ),
+                    const SizedBox(height: 22),
+                    const GoldDivider(width: 200),
+                    const SizedBox(height: 22),
+                    FilledButton.icon(
+                      onPressed: onOpen,
+                      icon: const Icon(Icons.mail_outline, size: 18),
+                      label: Text(l10n.openInvitation),
+                    ),
+                  ],
                 ),
               ),
-              Text(
-                wedding.bride.resolve(locale),
-                style: (isMobile ? text.displayMedium : text.displayLarge)
-                    ?.copyWith(color: AppColors.espresso),
-              ),
-              const SizedBox(height: 22),
-              const GoldDivider(width: 200),
-              const SizedBox(height: 22),
-              FilledButton.icon(
-                onPressed: onOpen,
-                icon: const Icon(Icons.mail_outline, size: 18),
-                label: Text(l10n.openInvitation),
-              ),
-            ],
+            ),
           ),
         ),
       ),

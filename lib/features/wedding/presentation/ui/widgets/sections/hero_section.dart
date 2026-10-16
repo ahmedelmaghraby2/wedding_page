@@ -28,53 +28,63 @@ class HeroSection extends StatelessWidget {
     final nameStyle = (isMobile ? text.displayMedium : text.displayLarge)
         ?.copyWith(color: AppColors.cream, shadows: shadow);
 
-    return SizedBox(
-      height: height,
-      width: double.infinity,
+    // The hero is at least [height] tall, but grows with its content so long
+    // names, extra lines or a larger text scale can never overflow it.
+    return ConstrainedBox(
+      constraints: BoxConstraints(minHeight: height),
       child: Stack(
-        fit: StackFit.expand,
+        alignment: Alignment.center,
         children: [
-          Image.asset(
-            wedding.heroImage,
-            fit: BoxFit.cover,
-            filterQuality: FilterQuality.medium,
-            errorBuilder: (context, error, stackTrace) => const DecoratedBox(
+          Positioned.fill(
+            child: Image.asset(
+              wedding.heroImage,
+              fit: BoxFit.cover,
+              filterQuality: FilterQuality.medium,
+              errorBuilder: (context, error, stackTrace) => const DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      AppColors.beige,
+                      AppColors.blush,
+                      AppColors.champagne,
+                    ],
+                  ),
+                ),
+                child: SizedBox.expand(),
+              ),
+            ),
+          ),
+          Positioned.fill(
+            child: DecoratedBox(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
                   colors: [
-                    AppColors.beige,
-                    AppColors.blush,
-                    AppColors.champagne,
+                    Colors.black.withValues(alpha: 0.35),
+                    Colors.black.withValues(alpha: 0.08),
+                    Colors.black.withValues(alpha: 0.45),
+                    AppColors.ivory,
                   ],
+                  stops: const [0, 0.32, 0.82, 1],
                 ),
               ),
-              child: SizedBox.expand(),
             ),
           ),
-          DecoratedBox(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Colors.black.withValues(alpha: 0.35),
-                  Colors.black.withValues(alpha: 0.08),
-                  Colors.black.withValues(alpha: 0.45),
-                  AppColors.ivory,
-                ],
-                stops: const [0, 0.32, 0.82, 1],
-              ),
-            ),
-          ),
-          PetalField(enabled: !isMobile),
-          Positioned.fill(
+          Positioned.fill(child: PetalField(enabled: !isMobile)),
+          SizedBox(
+            width: double.infinity,
             child: SafeArea(
               bottom: false,
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: isMobile ? 20 : 40),
+                padding: EdgeInsets.symmetric(
+                  horizontal: isMobile ? 20 : 40,
+                  vertical: 24,
+                ),
                 child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     FadeSlideIn(

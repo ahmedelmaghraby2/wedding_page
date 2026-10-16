@@ -58,47 +58,77 @@ class SiteHeader extends StatelessWidget {
             bottom: false,
             child: SizedBox(
               height: 68,
-              child: Row(
-                children: [
-                  _Brand(onTap: onHome, showName: !isMobile),
-                  const Spacer(),
-                  if (!isMobile) ...[
-                    _navItem(
-                      context,
-                      l10n.navDetails,
-                      () => onNavigate('details'),
-                    ),
-                    if (wedding.hasStory)
-                      _navItem(
-                        context,
-                        l10n.navStory,
-                        () => onNavigate('story'),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  // Decide what fits from the *unscaled* width, so a larger text
+                  // scale (accessibility) drops optional items instead of
+                  // overflowing the bar. `constraints.maxWidth` is the space left
+                  // inside the bar's horizontal padding.
+                  final scale = MediaQuery.textScalerOf(context).scale(1);
+                  final unscaled = scale <= 0
+                      ? constraints.maxWidth
+                      : constraints.maxWidth / scale;
+                  final showNav = !isMobile && unscaled >= 960;
+                  final showBrandName = unscaled >= 1100;
+                  // The decorative monogram is the first thing to go when the
+                  // controls alone need the whole bar (tiny screens at a large
+                  // text scale).
+                  final showBrandMark = unscaled >= 280;
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      // The brand is the only shrinkable region: it yields and
+                      // ellipsizes before anything overflows, and the trailing
+                      // controls always keep their intrinsic size.
+                      Flexible(
+                        child: showBrandMark
+                            ? _Brand(onTap: onHome, showName: showBrandName)
+                            : const SizedBox.shrink(),
                       ),
-                    if (wedding.showComments)
-                      _navItem(
-                        context,
-                        l10n.navWishes,
-                        () => onNavigate('wishes'),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (showNav) ...[
+                            _navItem(
+                              context,
+                              l10n.navDetails,
+                              () => onNavigate('details'),
+                            ),
+                            if (wedding.hasStory)
+                              _navItem(
+                                context,
+                                l10n.navStory,
+                                () => onNavigate('story'),
+                              ),
+                            if (wedding.showComments)
+                              _navItem(
+                                context,
+                                l10n.navWishes,
+                                () => onNavigate('wishes'),
+                              ),
+                            const SizedBox(width: 8),
+                          ],
+                          Tooltip(
+                            message: l10n.changeLanguage,
+                            child: TextButton(
+                              onPressed: onToggleLocale,
+                              child: Text(isArabic ? 'English' : 'العربية'),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          MusicButton(
+                            cubit: music,
+                            tooltip: music.state.isPlaying
+                                ? l10n.pauseMusic
+                                : l10n.playMusic,
+                          ),
+                          const SizedBox(width: 8),
+                          _MuteButton(cubit: music),
+                        ],
                       ),
-                    const SizedBox(width: 8),
-                  ],
-                  Tooltip(
-                    message: l10n.changeLanguage,
-                    child: TextButton(
-                      onPressed: onToggleLocale,
-                      child: Text(isArabic ? 'English' : 'العربية'),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  MusicButton(
-                    cubit: music,
-                    tooltip: music.state.isPlaying
-                        ? l10n.pauseMusic
-                        : l10n.playMusic,
-                  ),
-                  const SizedBox(width: 8),
-                  _MuteButton(cubit: music),
-                ],
+                    ],
+                  );
+                },
               ),
             ),
           ),
@@ -170,14 +200,19 @@ class _Brand extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
         child: Row(
+          mainAxisSize: MainAxisSize.min,
           children: [
             MonogramBadge(size: 40, label: wedding.monogramLabel),
             if (showName) ...[
               const SizedBox(width: 12),
-              Text(
-                '${wedding.groom.resolve(locale)} & ${wedding.bride.resolve(locale)}',
-                style: Theme.of(context).textTheme.titleMedium
-                    ?.copyWith(color: AppColors.espresso, letterSpacing: 1),
+              Flexible(
+                child: Text(
+                  '${wedding.groom.resolve(locale)} & ${wedding.bride.resolve(locale)}',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.titleMedium
+                      ?.copyWith(color: AppColors.espresso, letterSpacing: 1),
+                ),
               ),
             ],
           ],

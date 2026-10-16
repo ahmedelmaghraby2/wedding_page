@@ -4,7 +4,7 @@ Audit, hardening and verification of the multi-couple Flutter Web invitation
 platform. Companion to [`WEDDING_GUIDE.md`](WEDDING_GUIDE.md) (operator guide).
 
 - Environment: Flutter **3.47.6** (stable) · Dart **3.13.5** · Windows · Chrome
-- Verification: `flutter analyze` = **0 issues**, `flutter test` = **93 passed**,
+- Verification: `flutter analyze` = **0 issues**, `flutter test` = **122 passed**,
   `flutter build web --release` succeeds.
 
 ---
@@ -172,11 +172,39 @@ several **genuine** defects were found and fixed:
 5. Long single-token names and long bilingual couple names render without
    overflow.
 
+### Responsive verification (follow-up pass, evidence-based)
+
+A focused responsive audit reproduced the reported “blank section” symptom and
+the layout overflows, and fixed their root causes:
+
+1. **Tall sections stayed invisible (blank page stuck at `Opacity(0)`).**
+   `core/motion/reveal.dart` gated the entrance on
+   `info.visibleFraction >= 0.12` of the *child*. A section taller than ~8.3×
+   the viewport (e.g. the wishes list with many comments) can never reach that
+   fraction, so it never revealed while still occupying space — the page read as
+   blank. The trigger now requires that fraction of the *smaller* of the child
+   and the viewport, and a post-frame geometry check guarantees that content
+   already on screen always reveals.
+2. **Hero overflow.** `sections/hero_section.dart` used a fixed-height
+   `Stack(fit: expand)`; long names and a 1.5× text scale overflowed it. It is
+   now a `ConstrainedBox(minHeight:)` whose content determines the height.
+3. **Invitation-gate overflow.** The centred `Column` overflowed on short
+   (landscape) and 1.5× viewports; it is now centred *and* scrollable via
+   `LayoutBuilder` + `SingleChildScrollView` + `ConstrainedBox(minHeight:)`.
+4. **Header overflow.** The nav/brand row overflowed at tablet widths and under
+   text scaling. The header now drops the nav, then the brand name, then the
+   decorative monogram as the *unscaled* width shrinks, with the brand name
+   ellipsizing as a final safety net.
+
+Verified overflow-free across 320×568 … 1280×800, EN/AR, at 1.0× and 1.5× text
+(`test/responsive_layout_test.dart`); the wishes list is exercised with 60
+comments.
+
 ---
 
 ## 9. Testing (§10)
 
-`flutter test` → **93 tests** (was 55). Coverage added across this engagement:
+`flutter test` → **122 tests** (was 93). Coverage added across this engagement:
 
 | File | Focus |
 | --- | --- |
@@ -185,6 +213,7 @@ several **genuine** defects were found and fixed:
 | `test/comment_item_test.dart` | name/message/initials rendering, guest fallback, edit/delete popup actions |
 | `test/site_header_test.dart` | config-driven nav visibility, localized couple names (EN/AR), presence of the music control |
 | `test/a11y_test.dart` | WCAG contrast assertions, semantic labels, touch-target sizes, 1.5× text-scale overflow, long-content rendering |
+| `test/responsive_layout_test.dart` | tall-section reveal regression, page/header/gate overflow matrix (320→1280, EN/AR, 1.0×/1.5×), many-comment wishes list |
 | `test/audio_sync_test.dart` | Cubit ↔ single `MusicController` sync, mute propagation, lone-cubit close, one-source-two-controls |
 | `test/comment_flow_test.dart` | **integration-style** end-to-end flow: form → cubit → repository port → live list, plus invalid-submit blocking |
 

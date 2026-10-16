@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'dart:ui' show PlatformDispatcher;
 
 import 'package:flutter/material.dart';
@@ -110,14 +111,64 @@ class _RevealOnScrollState extends State<RevealOnScroll>
   bool _triggered = false;
 
   @override
+  void initState() {
+    super.initState();
+    // Safety net for the first layout: a section that is already on screen must
+    // never stay hidden, even if the visibility detector's first callback is
+    // coalesced away. The detector still drives reveals on later scrolls.
+    WidgetsBinding.instance.addPostFrameCallback((_) => _revealIfOnScreen());
+  }
+
+  @override
   void dispose() {
     _controller.dispose();
     super.dispose();
   }
 
+  /// Pixels of [childHeight] that must be visible before the entrance plays.
+  ///
+  /// The threshold is a fraction of the *smaller* of the child and the viewport
+  /// so that a section taller than the viewport (a long wishes list, for
+  /// example) can still reach it once its top edge scrolls into view. Gating on
+  /// a pure `visibleFraction` of the child made such sections unreachable.
+  double _thresholdFor(double childHeight, double viewportHeight) {
+    final reference = math.min(childHeight, viewportHeight);
+    return widget.visibleFraction * reference;
+  }
+
   void _onVisibilityChanged(VisibilityInfo info) {
+    if (!mounted || _triggered) return;
+    final viewportHeight =
+        MediaQuery.maybeOf(context)?.size.height ?? info.size.height;
+    if (info.visibleBounds.height <
+        _thresholdFor(info.size.height, viewportHeight)) {
+      return;
+    }
+    _reveal();
+  }
+
+  /// Reveals when the widget's own geometry overlaps the viewport enough.
+  ///
+  /// This does not depend on the detector and runs once after the first frame,
+  /// so on-screen content is guaranteed to become visible.
+  void _revealIfOnScreen() {
+    if (!mounted || _triggered) return;
+    final media = MediaQuery.maybeOf(context);
+    final box = context.findRenderObject();
+    if (media == null || box is! RenderBox || !box.hasSize || !box.attached) {
+      return;
+    }
+    final bounds = box.localToGlobal(Offset.zero) & box.size;
+    final onScreen = bounds.intersect(Offset.zero & media.size);
+    if (onScreen.isEmpty) return;
+    if (onScreen.height < _thresholdFor(box.size.height, media.size.height)) {
+      return;
+    }
+    _reveal();
+  }
+
+  void _reveal() {
     if (_triggered) return;
-    if (info.visibleFraction < widget.visibleFraction) return;
     _triggered = true;
     if (prefersReducedMotion(context)) {
       _controller.value = 1;
